@@ -1,10 +1,4 @@
 // firebase-config.js
-
-// تأكد من تحميل مكتبات Firebase الأساسية أولاً في HTML
-// <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-// <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-// <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
 const firebaseConfig = {
   apiKey: "AIzaSyAK-L3klvWQARcfU2Vykv4pVxErOAZxsk4",
   authDomain: "sapproject-c53af.firebaseapp.com",
@@ -15,36 +9,37 @@ const firebaseConfig = {
   measurementId: "G-P83MM0RZJ6"
 };
 
-// منع التهيئة المكررة
 try {
   if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+    const app = firebase.initializeApp(firebaseConfig);
+    console.log("Firebase initialized successfully");
   }
 } catch (error) {
-  console.error('فشل في تهيئة Firebase:', error);
+  console.error("Firebase initialization error:", error);
 }
 
-// تعريف الخدمات الأساسية
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// (اختياري) إعداد معالج الأخطاء العام
-auth.useDeviceLanguage();
-auth.onAuthStateChanged(user => {
-  if (user) {
-    console.log('تم اكتشاف مستخدم مسجل:', user.email);
-  }
-}, error => {
-  console.error('خطأ في حالة المصادقة:', error);
-});
-
-// (اختياري) تحسين أداء Firestore
+// إعدادات Firestore الموصى بها
 db.settings({
-  cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+  ignoreUndefinedProperties: true,
   merge: true
 });
 
-// تأكد من توافقية المتصفحات القديمة
+// معالج أخطاء مركزي
+const handleFirebaseError = (error) => {
+  const errors = {
+    'auth/email-already-in-use': 'البريد الإلكتروني مستخدم مسبقاً',
+    'auth/invalid-email': 'بريد إلكتروني غير صالح',
+    'auth/weak-password': 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+    'auth/operation-not-allowed': 'عملية التسجيل غير مسموحة',
+    'firestore/write-failed': 'فشل في حفظ البيانات'
+  };
+  return errors[error.code] || 'حدث خطأ غير متوقع';
+};
+
+// تصدير الدوال للاختبار (اختياري)
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { firebase, auth, db };
+  module.exports = { firebase, auth, db, handleFirebaseError };
 }
