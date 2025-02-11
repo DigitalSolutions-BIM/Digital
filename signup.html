@@ -1,29 +1,54 @@
 <form id="signup-form">
-    <input type="email" id="email" placeholder="البريد الإلكتروني">
-    <input type="password" id="password" placeholder="كلمة المرور">
+    <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+    <input type="password" id="password" placeholder="كلمة المرور" minlength="6" required>
     <button type="submit">إنشاء حساب</button>
+    <div id="error-message" style="color: red; margin-top: 10px;"></div>
 </form>
 
+<!-- تأكد من إضافة السكريبتات الأساسية -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="firebase-config.js"></script>
-<script>
-    document.getElementById('signup-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
 
-        auth.createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                // إضافة بيانات المستخدم في Firestore
-                db.collection('users').doc(userCredential.user.uid).set({
-                    email: email,
-                    createdAt: new Date(),
-                    progress: 0
-                });
-                window.location.href = 'home.html';
-            })
-            .catch((error) => {
-                console.error(error);
+<script>
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errorElement = document.getElementById('error-message');
+        errorElement.textContent = '';
+        
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        try {
+            // إنشاء الحساب في Authentication
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            
+            // إضافة بيانات إضافية في Firestore
+            await db.collection('users').doc(userCredential.user.uid).set({
+                email: email,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                progress: 0,
+                lastLogin: null
             });
+            
+            // إعادة التوجيه بعد النجاح
+            window.location.href = 'home.html';
+            
+        } catch (error) {
+            console.error('Error:', error);
+            errorElement.textContent = handleSignupError(error.code);
+        }
     });
+
+    // دالة معالجة الأخطاء
+    function handleSignupError(errorCode) {
+        const errors = {
+            'auth/email-already-in-use': 'البريد الإلكتروني مستخدم مسبقاً',
+            'auth/invalid-email': 'بريد إلكتروني غير صالح',
+            'auth/weak-password': 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+            'auth/operation-not-allowed': 'عملية التسجيل غير مسموحة'
+        };
+        return errors[errorCode] || 'حدث خطأ غير متوقع، يرجى المحاولة لاحقاً';
+    }
 </script>
