@@ -1,0 +1,29 @@
+<form id="signup-form">
+    <input type="email" id="email" placeholder="البريد الإلكتروني">
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <button type="submit">إنشاء حساب</button>
+</form>
+
+<script src="firebase-config.js"></script>
+<script>
+    document.getElementById('signup-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // إضافة بيانات المستخدم في Firestore
+                db.collection('users').doc(userCredential.user.uid).set({
+                    email: email,
+                    createdAt: new Date(),
+                    progress: 0
+                });
+                window.location.href = 'home.html';
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    });
+</script>
