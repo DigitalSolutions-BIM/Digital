@@ -1,0 +1,18 @@
+<div id="profile-data">
+    <h2>الملف الشخصي</h2>
+    <p id="email"></p>
+    <p id="join-date"></p>
+</div>
+
+<script>
+    auth.onAuthStateChanged(user => {
+        if(!user) window.location.href = 'index.html';
+        
+        db.collection('users').doc(user.uid).get()
+            .then(doc => {
+                document.getElementById('email').textContent = doc.data().email;
+                document.getElementById('join-date').textContent = 
+                    new Date(doc.data().createdAt).toLocaleDateString();
+            });
+    });
+</script>
