@@ -1,88 +1,82 @@
 /* General Styles */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f7fc;
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
     color: #333;
     margin: 0;
     padding: 0;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     height: 100vh;
 }
 
-/* Centered Container */
-.container {
-    text-align: center;
-    background: white;
-    padding: 2.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* Authentication Container */
+.auth-container {
     max-width: 400px;
     width: 90%;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-/* Heading */
-h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    color: #007bff;
+/* Headings */
+.auth-container h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
 }
 
-p {
-    font-size: 1.1rem;
-    color: #555;
+.auth-container p {
+    font-size: 1rem;
+    color: #666;
     margin-bottom: 1.5rem;
 }
 
-/* Button Group */
+/* Buttons */
 .button-group {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-/* Buttons */
 button {
     background: #007bff;
     color: white;
-    padding: 0.8rem 1.2rem;
+    padding: 0.8rem;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
     transition: background 0.3s ease, transform 0.2s ease;
-    width: 100%;
 }
 
-/* Signup Button */
-.signup-btn {
-    background: #28a745;
-}
-
-/* Button Hover */
 button:hover {
     background: #0056b3;
 }
 
-/* Signup Button Hover */
-.signup-btn:hover {
-    background: #218838;
+button:active {
+    transform: scale(0.98);
 }
 
-/* Button Click Effect */
-button:active {
-    transform: scale(0.97);
+/* Secondary Button */
+.secondary-btn {
+    background: #6c757d;
+}
+
+.secondary-btn:hover {
+    background: #5a6268;
 }
 
 /* Responsive Design */
 @media (max-width: 600px) {
-    .container {
+    .auth-container {
         width: 95%;
-        padding: 2rem;
+        padding: 1.5rem;
     }
-    
     button {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 }
