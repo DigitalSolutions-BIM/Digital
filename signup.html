@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>إنشاء حساب جديد</title>
+    <title>Sign Up</title>
     <link rel="stylesheet" href="style.css"> <!-- Ensure this path is correct -->
     
     <!-- Firebase Dependencies -->
@@ -13,19 +13,19 @@
 </head>
 <body>
     <div class="auth-container">
-        <h1>إنشاء حساب جديد</h1>
+        <h1>Create New Account</h1>
         <form id="signup-form">
             <div class="form-group">
-                <label for="email">البريد الإلكتروني:</label>
+                <label for="email">Email</label>
                 <input type="email" id="email" required autocomplete="email">
             </div>
             
             <div class="form-group">
-                <label for="password">كلمة المرور:</label>
+                <label for="password">Password:</label>
                 <input type="password" id="password" minlength="6" required autocomplete="new-password">
             </div>
             
-            <button type="submit" id="submit-btn">إنشاء حساب</button>
+            <button type="submit" id="submit-btn">Sign Up</button>
             <div id="error-message" class="error-message"></div>
             <div id="loading" class="loading" style="display: none;">
                 جاري إنشاء الحساب...
@@ -33,7 +33,7 @@
         </form>
         
         <p class="auth-link">
-            لديك حساب بالفعل؟ <a href="login.html">سجل الدخول هنا</a>
+            You Have Account?<a href="login.html">Log in Here</a>
         </p>
     </div>
 
