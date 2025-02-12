@@ -6,14 +6,13 @@
     <link rel="stylesheet" href="style.css">
     
     <!-- Firebase Dependencies -->
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="firebase-config.js"></script>
-
     <style>
-        .success-popup, .overlay {
+        /* Add these styles to your CSS */
+        .success-popup {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -28,12 +27,14 @@
         }
         
         .overlay {
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background: rgba(0,0,0,0.5);
             z-index: 999;
+            display: none;
         }
     </style>
 </head>
@@ -74,7 +75,7 @@
         </form>
         
         <p class="auth-link">
-            You Have Account? <a href="login.html">Log in Here</a>
+            You Have Account?<a href="login.html">Log in Here</a>
         </p>
     </div>
 
@@ -86,6 +87,11 @@
     </div>
 
 <script>
+    // Ensure Firebase is initialized properly
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
     document.getElementById('signup-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorElement = document.getElementById('error-message');
@@ -111,25 +117,23 @@
             const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
-            // Sanitize email to use as document ID (replace special characters)
-            const docId = email.replace(/[@.]/g, "_").toLowerCase();
+            // Create document ID from uppercase email
+            const docId = email.toUpperCase();
 
-            // Ensure Firestore is initialized before using it
-            if (!firebase.firestore) {
-                throw new Error("Firestore is not initialized properly");
-            }
-
-            // Save user details in Firestore
+            // Save additional data to Firestore
             await firebase.firestore().collection('users').doc(docId).set({
-                uid: user.uid,
+                uid: user.uid, // Store UID for reference
                 firstName: firstName,
                 lastName: lastName,
-                email: email,
+                email: email, // Store original email
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
+            console.log("User data saved to Firestore successfully!");
+
             // Send verification email
             await user.sendEmailVerification();
+            console.log("Verification email sent!");
             
             // Show success popup
             document.getElementById('overlay').style.display = 'block';
@@ -137,23 +141,29 @@
             startCountdown();
 
         } catch (error) {
-            let errorMessage = 'Error Creating Account';
+            console.error("Error during signup:", error);
+            let errorMessage = 'حدث خطأ أثناء إنشاء الحساب';
 
             switch (error.code) {
                 case 'auth/email-already-in-use':
-                    errorMessage = 'Email Already Exist';
+                    errorMessage = 'البريد الإلكتروني مستخدم بالفعل';
                     break;
                 case 'auth/invalid-email':
-                    errorMessage = 'invalid Email';
+                    errorMessage = 'بريد إلكتروني غير صالح';
                     break;
                 case 'auth/weak-password':
-                    errorMessage = 'Password Must Be 6 Char As min';
+                    errorMessage = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
                     break;
                 case 'auth/operation-not-allowed':
-                    errorMessage = 'Not Authorized';
+                    errorMessage = 'عملية غير مسموح بها';
                     break;
                 default:
-                    errorMessage = error.message; // Show the actual error message for debugging
+                    // Handle Firestore errors
+                    if (error.message.includes('invalid document ID')) {
+                        errorMessage = 'Invalid email format for document ID';
+                    } else if (error.message.includes('permission-denied')) {
+                        errorMessage = 'Firestore permission denied. Check your Firestore rules.';
+                    }
                     break;
             }
             errorElement.textContent = errorMessage;
