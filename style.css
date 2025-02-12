@@ -13,11 +13,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    direction: rtl;
+    direction: ltr; /* Changed from rtl to ltr */
     padding: 20px;
 }
 
-/* Shared container styles */
+/* Rest of the styles remain the same as they are direction-agnostic */
 .container, .auth-container {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
@@ -98,6 +98,7 @@ h1 {
 
 .form-group {
     margin-bottom: 1.5rem;
+    text-align: left; /* Added for LTR alignment */
 }
 
 label {
@@ -105,6 +106,7 @@ label {
     margin-bottom: 0.5rem;
     color: #e0e0e0;
     font-size: 0.95rem;
+    text-align: left; /* Added for LTR alignment */
 }
 
 input {
@@ -116,6 +118,7 @@ input {
     color: #ffffff;
     font-size: 1rem;
     transition: all 0.3s ease;
+    text-align: left; /* Added for LTR alignment */
 }
 
 input:focus {
