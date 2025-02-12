@@ -2,17 +2,18 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <link rel="stylesheet" href="style.css">
     
     <!-- Firebase Dependencies -->
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="firebase-config.js"></script>
+
     <style>
-        .success-popup {
+        .success-popup, .overlay {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -27,85 +28,53 @@
         }
         
         .overlay {
-            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background: rgba(0,0,0,0.5);
             z-index: 999;
-            display: none;
-        }
-
-        .error-message {
-            color: #ff0000;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .loading {
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .password-requirements {
-            font-size: 0.8em;
-            color: #666;
-            margin-top: 5px;
         }
     </style>
 </head>
 <body>
     <div class="auth-container">
         <h1>Create New Account</h1>
-        <form id="signup-form" novalidate>
+        <form id="signup-form">
             <div class="form-group">
                 <label for="firstName">First Name</label>
-                <input type="text" id="firstName" required autocomplete="given-name" minlength="2">
+                <input type="text" id="firstName" required autocomplete="given-name">
             </div>
             
             <div class="form-group">
                 <label for="lastName">Last Name</label>
-                <input type="text" id="lastName" required autocomplete="family-name" minlength="2">
+                <input type="text" id="lastName" required autocomplete="family-name">
             </div>
             
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" required autocomplete="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                <input type="email" id="email" required autocomplete="email">
             </div>
             
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" minlength="8" required autocomplete="new-password">
-                <div class="password-requirements">
-                    Password must be at least 8 characters long and contain:
-                    <ul>
-                        <li>One uppercase letter</li>
-                        <li>One lowercase letter</li>
-                        <li>One number</li>
-                        <li>One special character</li>
-                    </ul>
-                </div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" minlength="6" required autocomplete="new-password">
             </div>
             
             <div class="form-group">
-                <label for="confirm-password">Confirm Password</label>
+                <label for="confirm-password">Confirm Password:</label>
                 <input type="password" id="confirm-password" required autocomplete="new-password">
             </div>
             
             <button type="submit" id="submit-btn">Sign Up</button>
             <div id="error-message" class="error-message"></div>
             <div id="loading" class="loading" style="display: none;">
-                Creating account...
+                جاري إنشاء الحساب...
             </div>
         </form>
         
         <p class="auth-link">
-            Already have an account? <a href="login.html">Log in here</a>
+            You Have Account? <a href="login.html">Log in Here</a>
         </p>
     </div>
 
@@ -113,122 +82,104 @@
     <div class="overlay" id="overlay"></div>
     <div class="success-popup" id="success-popup">
         <h2>Account Created Successfully! ✅</h2>
-        <p>Please check your email to verify your account.</p>
-        <p>Redirecting to login page in <span id="countdown">5</span> seconds...</p>
+        <p>Redirecting to login page in <span id="countdown">10</span> seconds...</p>
     </div>
 
-    <script>
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const errorElement = document.getElementById('error-message');
-            errorElement.textContent = '';
+<script>
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errorElement = document.getElementById('error-message');
+        errorElement.textContent = '';
 
-            // Get form values
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const confirmPassword = document.getElementById('confirm-password').value.trim();
+        // Get form values
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirm-password').value.trim();
 
-            // Validate form inputs
-            if (!firstName || firstName.length < 2) {
-                errorElement.textContent = 'First name must be at least 2 characters long';
-                return;
-            }
-
-            if (!lastName || lastName.length < 2) {
-                errorElement.textContent = 'Last name must be at least 2 characters long';
-                return;
-            }
-
-            // Validate email format
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(email)) {
-                errorElement.textContent = 'Please enter a valid email address';
-                return;
-            }
-
-            // Validate password strength
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-            if (!passwordRegex.test(password)) {
-                errorElement.textContent = 'Password must meet all requirements';
-                return;
-            }
-
-            // Validate passwords match
-            if (password !== confirmPassword) {
-                errorElement.textContent = 'Passwords do not match';
-                return;
-            }
-
-            toggleLoading(true);
-
-            try {
-                // Create user in Authentication
-                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-
-                // Save additional data to Firestore using UID as document ID
-                await firebase.firestore().collection('users').doc(user.uid).set({
-                    firstName: firstName,
-                    lastName: lastName,
-                    email: email.toLowerCase(), // Store lowercase email for consistency
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                // Send verification email
-                await user.sendEmailVerification();
-                
-                // Show success popup
-                document.getElementById('overlay').style.display = 'block';
-                document.getElementById('success-popup').style.display = 'block';
-                startCountdown();
-
-            } catch (error) {
-                console.error('Signup error:', error);
-                let errorMessage = 'An error occurred while creating the account';
-
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'This email is already registered';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Invalid email address';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Password is too weak';
-                        break;
-                    case 'auth/operation-not-allowed':
-                        errorMessage = 'Operation not allowed';
-                        break;
-                    case 'auth/network-request-failed':
-                        errorMessage = 'Network error. Please check your connection';
-                        break;
-                }
-                errorElement.textContent = errorMessage;
-            } finally {
-                toggleLoading(false);
-            }
-        });
-
-        function toggleLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-            document.getElementById('submit-btn').disabled = show;
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            errorElement.textContent = 'Passwords do not match';
+            return;
         }
 
-        function startCountdown() {
-            let seconds = 5;
-            const countdownElement = document.getElementById('countdown');
-            const countdownInterval = setInterval(() => {
-                seconds--;
-                countdownElement.textContent = seconds;
-                
-                if (seconds <= 0) {
-                    clearInterval(countdownInterval);
-                    window.location.href = 'login.html';
-                }
-            }, 1000);
+        toggleLoading(true);
+
+        try {
+            // Create user in Authentication
+            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            // Sanitize email to use as document ID (replace special characters)
+            const docId = email.replace(/[@.]/g, "_").toLowerCase();
+
+            // Ensure Firestore is initialized before using it
+            if (!firebase.firestore) {
+                throw new Error("Firestore is not initialized properly");
+            }
+
+            // Save user details in Firestore
+            await firebase.firestore().collection('users').doc(docId).set({
+                uid: user.uid,
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Send verification email
+            await user.sendEmailVerification();
+            
+            // Show success popup
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('success-popup').style.display = 'block';
+            startCountdown();
+
+        } catch (error) {
+            let errorMessage = 'Error Creating Account';
+
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    errorMessage = 'Email Already Exist';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = 'invalid Email';
+                    break;
+                case 'auth/weak-password':
+                    errorMessage = 'Password Must Be 6 Char As min';
+                    break;
+                case 'auth/operation-not-allowed':
+                    errorMessage = 'Not Authorized';
+                    break;
+                default:
+                    errorMessage = error.message; // Show the actual error message for debugging
+                    break;
+            }
+            errorElement.textContent = errorMessage;
+        } finally {
+            toggleLoading(false);
         }
-    </script>
+    });
+
+    function toggleLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+        document.getElementById('submit-btn').disabled = show;
+    }
+
+    function startCountdown() {
+        let seconds = 10;
+        const countdownElement = document.getElementById('countdown');
+        const countdownInterval = setInterval(() => {
+            seconds--;
+            countdownElement.textContent = seconds;
+            
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = 'login.html';
+            }
+        }, 1000);
+    }
+</script>
 </body>
 </html>
