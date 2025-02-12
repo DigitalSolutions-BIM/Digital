@@ -3,18 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="style.css"> <!-- Ensure this path is correct -->
+    <link rel="stylesheet" href="style.css">
     
     <!-- Firebase Dependencies -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="firebase-config.js"></script> <!-- This already contains 'auth' -->
+    <script src="firebase-config.js"></script>
+    <style>
+        /* Add these styles to your CSS */
+        .success-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            text-align: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="auth-container">
         <h1>Create New Account</h1>
         <form id="signup-form">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" required autocomplete="given-name">
+            </div>
+            
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" required autocomplete="family-name">
+            </div>
+            
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" required autocomplete="email">
@@ -23,6 +60,11 @@
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" minlength="6" required autocomplete="new-password">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" id="confirm-password" required autocomplete="new-password">
             </div>
             
             <button type="submit" id="submit-btn">Sign Up</button>
@@ -37,33 +79,55 @@
         </p>
     </div>
 
+    <!-- Success Popup -->
+    <div class="overlay" id="overlay"></div>
+    <div class="success-popup" id="success-popup">
+        <h2>Account Created Successfully! ✅</h2>
+        <p>Redirecting to login page in <span id="countdown">10</span> seconds...</p>
+    </div>
+
 <script>
     document.getElementById('signup-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        toggleLoading(true);
+        const errorElement = document.getElementById('error-message');
+        errorElement.textContent = '';
 
+        // Get form values
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value.trim();
-        const errorElement = document.getElementById('error-message');
+        const confirmPassword = document.getElementById('confirm-password').value.trim();
 
-        errorElement.textContent = ''; // Clear previous errors
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            errorElement.textContent = 'Passwords do not match';
+            return;
+        }
+
+        toggleLoading(true);
 
         try {
-            // إنشاء المستخدم في Authentication
+            // Create user in Authentication
             const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
-            // حفظ بيانات إضافية في Firestore
+            // Save additional data to Firestore
             await firebase.firestore().collection('users').doc(user.uid).set({
+                firstName: firstName,
+                lastName: lastName,
                 email: email,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // إرسال بريد التحقق
+            // Send verification email
             await user.sendEmailVerification();
             
-            // إعادة توجيه المستخدم بعد التسجيل الناجح
-            window.location.href = 'index.html';
+            // Show success popup
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('success-popup').style.display = 'block';
+            startCountdown();
+
         } catch (error) {
             let errorMessage = 'حدث خطأ أثناء إنشاء الحساب';
 
@@ -89,6 +153,21 @@
 
     function toggleLoading(show) {
         document.getElementById('loading').style.display = show ? 'block' : 'none';
+        document.getElementById('submit-btn').disabled = show;
+    }
+
+    function startCountdown() {
+        let seconds = 10;
+        const countdownElement = document.getElementById('countdown');
+        const countdownInterval = setInterval(() => {
+            seconds--;
+            countdownElement.textContent = seconds;
+            
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = 'login.html';
+            }
+        }, 1000);
     }
 </script>
 </body>
