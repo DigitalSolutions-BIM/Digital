@@ -1,95 +1,146 @@
-/* Dark Theme Styling */
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
 body {
-    background-color: #121212;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     color: #ffffff;
-    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    direction: rtl;
+    padding: 20px;
 }
 
 .auth-container {
-    background-color: #1e1e1e;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    width: 350px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 h1 {
-    color: #f0f0f0;
-    font-size: 24px;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    font-weight: 600;
 }
 
 .form-group {
-    margin: 15px 0;
-    text-align: right;
+    margin-bottom: 1.5rem;
 }
 
 label {
     display: block;
-    margin-bottom: 5px;
-    color: #cccccc;
-    font-size: 14px;
+    margin-bottom: 0.5rem;
+    color: #e0e0e0;
+    font-size: 0.95rem;
 }
 
 input {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #333;
-    border-radius: 5px;
-    background-color: #222;
-    color: #fff;
-    font-size: 16px;
-    outline: none;
+    padding: 0.8rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
 input:focus {
-    border-color: #6200ea;
+    outline: none;
+    border-color: #4a90e2;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
 button {
     width: 100%;
-    padding: 10px;
-    background-color: #6200ea;
+    padding: 0.8rem;
+    background: #4a90e2;
+    color: #ffffff;
     border: none;
-    color: #fff;
-    font-size: 16px;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #3700b3;
+    background: #357abd;
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(1px);
 }
 
 .error-message {
-    color: #ff5252;
-    font-size: 14px;
-    margin-top: 10px;
+    color: #ff6b6b;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    min-height: 1.2rem;
 }
 
 .loading {
-    color: #03dac6;
-    font-size: 14px;
-    margin-top: 10px;
+    color: #4a90e2;
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
 }
 
 .auth-link {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #bbbbbb;
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #e0e0e0;
+    font-size: 0.9rem;
 }
 
-a {
-    color: #bb86fc;
+.auth-link a {
+    color: #4a90e2;
     text-decoration: none;
+    transition: color 0.3s ease;
 }
 
-a:hover {
+.auth-link a:hover {
+    color: #357abd;
     text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    input, button {
+        padding: 0.7rem;
+    }
+}
+
+/* Animation for loading state */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.loading {
+    animation: fadeIn 0.3s ease;
 }
