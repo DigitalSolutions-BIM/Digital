@@ -1,20 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
+    <meta charset="UTF-8">
     <title>Startup</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>مرحبًا بك!</h1>
-    <button onclick="location.href='login.html'">تسجيل الدخول</button>
-    <button onclick="location.href='signup.html'">إنشاء حساب</button>
+    <div class="container">
+        <h1>مرحبًا بك!</h1>
+        <p>ابدأ رحلتك معنا الآن</p>
+        <div class="button-group">
+            <button onclick="location.href='login.html'">تسجيل الدخول</button>
+            <button class="signup-btn" onclick="location.href='signup.html'">إنشاء حساب</button>
+        </div>
+    </div>
     
     <script src="firebase-config.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        // تحقق إذا كان المستخدم مسجل دخول
+        // التحقق مما إذا كان المستخدم مسجل دخول
         auth.onAuthStateChanged(user => {
-            if(user) {
+            if (user) {
                 window.location.href = 'home.html';
             }
         });
