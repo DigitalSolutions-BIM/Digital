@@ -112,11 +112,15 @@
             const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
+            // Create document ID from uppercase email
+            const docId = email.toUpperCase();
+
             // Save additional data to Firestore
-            await firebase.firestore().collection('users').doc(user.uid).set({
+            await firebase.firestore().collection('users').doc(docId).set({
+                uid: user.uid, // Store UID for reference
                 firstName: firstName,
                 lastName: lastName,
-                email: email,
+                email: email, // Store original email
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
@@ -143,6 +147,12 @@
                     break;
                 case 'auth/operation-not-allowed':
                     errorMessage = 'عملية غير مسموح بها';
+                    break;
+                default:
+                    // Handle Firestore errors
+                    if (error.message.includes('invalid document ID')) {
+                        errorMessage = 'Invalid email format for document ID';
+                    }
                     break;
             }
             errorElement.textContent = errorMessage;
