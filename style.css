@@ -7,20 +7,17 @@
 }
 
 body {
-    background-image: url('https://i.ibb.co/ycg450P0/Background.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: url('https://i.ibb.co/ycg450P0/Background.jpg') center/cover no-repeat;
     color: #ffffff;
     min-height: 60vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    direction: ltr; /* Changed from rtl to ltr */
+    direction: ltr; /* Left-to-right alignment */
     padding: 20px;
 }
 
-/* Rest of the styles remain the same as they are direction-agnostic */
+/* Containers */
 .container, .auth-container {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
@@ -30,45 +27,11 @@ body {
     max-width: 420px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.error-message {
-    color: red;
-    margin: 1rem 0;
-}
-
-.loading {
-    color: #007bff;
-    margin: 1rem 0;
-}
-
-.success-popup h2 {
-    color: green;
-    margin-bottom: 1rem;
-}
-
-
-.success-popup h3 {
-    color: green;
-    margin-bottom: 1rem;
-}
-
-.success-popup p {
-    font-size: 1.1rem;
-}
-
-/* Welcome page styles */
-.container {
     text-align: center;
-    max-width: 500px;
     animation: fadeIn 0.6s ease-out;
 }
 
-.container h1 {
+.container h1, .welcome-section h1 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     background: linear-gradient(45deg, #ffffff, #4a90e2);
@@ -83,7 +46,7 @@ body {
     margin-bottom: 2.5rem;
 }
 
-/* Button group styles */
+/* Buttons */
 .button-group {
     display: flex;
     gap: 1rem;
@@ -97,6 +60,7 @@ body {
     font-size: 1.1rem;
     border-radius: 12px;
     transition: all 0.3s ease;
+    border: 2px solid transparent;
 }
 
 .button-group .signup-btn {
@@ -106,7 +70,7 @@ body {
 
 .button-group button:not(.signup-btn) {
     background: transparent;
-    border: 2px solid #4a90e2;
+    border-color: #4a90e2;
     color: #4a90e2;
 }
 
@@ -119,7 +83,7 @@ body {
     background: rgba(74, 144, 226, 0.1);
 }
 
-/* Form styles */
+/* Form Elements */
 h1 {
     color: #ffffff;
     text-align: center;
@@ -130,7 +94,7 @@ h1 {
 
 .form-group {
     margin-bottom: 1.5rem;
-    text-align: left; /* Added for LTR alignment */
+    text-align: left;
 }
 
 label {
@@ -138,19 +102,21 @@ label {
     margin-bottom: 0.5rem;
     color: #e0e0e0;
     font-size: 0.95rem;
-    text-align: left; /* Added for LTR alignment */
+}
+
+input, button {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
 input {
-    width: 100%;
-    padding: 0.8rem 1rem;
     border: 2px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
     color: #ffffff;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    text-align: left; /* Added for LTR alignment */
+    text-align: left;
 }
 
 input:focus {
@@ -161,16 +127,11 @@ input:focus {
 }
 
 button {
-    width: 100%;
-    padding: 0.8rem;
     background: #4a90e2;
     color: #ffffff;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 button:hover {
@@ -182,7 +143,7 @@ button:active {
     transform: translateY(1px);
 }
 
-/* Message styles */
+/* Messages */
 .error-message {
     color: #ff6b6b;
     margin-top: 1rem;
@@ -199,7 +160,16 @@ button:active {
     animation: fadeIn 0.3s ease;
 }
 
-/* Link styles */
+.success-popup h2, .success-popup h3 {
+    color: green;
+    margin-bottom: 1rem;
+}
+
+.success-popup p {
+    font-size: 1.1rem;
+}
+
+/* Auth Links */
 .auth-link {
     text-align: center;
     margin-top: 1.5rem;
@@ -218,7 +188,7 @@ button:active {
     text-decoration: underline;
 }
 
-/* Home page specific styles */
+/* Home Page */
 .home-container {
     text-align: center;
     max-width: 600px;
@@ -227,14 +197,6 @@ button:active {
 .welcome-section {
     margin-bottom: 2rem;
     animation: fadeInUp 0.6s ease-out;
-}
-
-.welcome-section h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    background: linear-gradient(45deg, #ffffff, #4a90e2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .user-email {
@@ -291,13 +253,13 @@ button:active {
     }
 }
 
-/* Responsive styles */
+/* Responsive Styles */
 @media (max-width: 480px) {
     .container, .auth-container {
         padding: 1.5rem;
     }
 
-    .container h1 {
+    .container h1, .welcome-section h1 {
         font-size: 2rem;
     }
 
@@ -321,10 +283,6 @@ button:active {
         padding: 0.7rem;
     }
 
-    .welcome-section h1 {
-        font-size: 2rem;
-    }
-    
     .user-email {
         font-size: 1rem;
     }
