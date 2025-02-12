@@ -1,58 +1,99 @@
-:root {
-    --primary-color: #2a9d8f;
-    --secondary-color: #264653;
-    --accent-color: #e9c46a;
-    --background: #1a1a1a;
-    --text-color: #ffffff;
-    --input-bg: #2d2d2d;
-    --error-color: #e76f51;
-}
-
+/* Reset and base styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 body {
-    background: var(--background);
-    color: var(--text-color);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #ffffff;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     direction: rtl;
+    padding: 20px;
 }
 
-.auth-container {
-    background: var(--secondary-color);
-    padding: 2.5rem;
+/* Shared container styles */
+.container, .auth-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
     border-radius: 15px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 450px;
-    transform: translateY(0);
-    animation: slideUp 0.6s ease;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-@keyframes slideUp {
-    from {
-        transform: translateY(50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+/* Welcome page styles */
+.container {
+    text-align: center;
+    max-width: 500px;
+    animation: fadeIn 0.6s ease-out;
 }
 
+.container h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #ffffff, #4a90e2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.container p {
+    font-size: 1.2rem;
+    color: #e0e0e0;
+    margin-bottom: 2.5rem;
+}
+
+/* Button group styles */
+.button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.button-group button {
+    min-width: 160px;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.button-group .signup-btn {
+    background: #4a90e2;
+    color: white;
+}
+
+.button-group button:not(.signup-btn) {
+    background: transparent;
+    border: 2px solid #4a90e2;
+    color: #4a90e2;
+}
+
+.button-group button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+}
+
+.button-group button:not(.signup-btn):hover {
+    background: rgba(74, 144, 226, 0.1);
+}
+
+/* Form styles */
 h1 {
+    color: #ffffff;
     text-align: center;
     margin-bottom: 2rem;
-    color: var(--primary-color);
-    font-size: 2.2em;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    font-size: 1.8rem;
+    font-weight: 600;
 }
 
 .form-group {
@@ -62,97 +103,194 @@ h1 {
 label {
     display: block;
     margin-bottom: 0.5rem;
-    color: var(--accent-color);
-    font-weight: 500;
+    color: #e0e0e0;
+    font-size: 0.95rem;
 }
 
 input {
     width: 100%;
-    padding: 0.8rem 1.2rem;
-    background: var(--input-bg);
-    border: 2px solid transparent;
+    padding: 0.8rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
-    color: var(--text-color);
+    color: #ffffff;
     font-size: 1rem;
     transition: all 0.3s ease;
 }
 
 input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 15px rgba(42, 157, 143, 0.2);
+    border-color: #4a90e2;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
-button#submit-btn {
+button {
     width: 100%;
-    padding: 1rem;
-    background: var(--primary-color);
-    color: white;
+    padding: 0.8rem;
+    background: #4a90e2;
+    color: #ffffff;
     border: none;
     border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 1rem;
 }
 
-button#submit-btn:hover {
-    background: #21867a;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(42, 157, 143, 0.4);
+button:hover {
+    background: #357abd;
+    transform: translateY(-1px);
 }
 
-.auth-link {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: #cccccc;
+button:active {
+    transform: translateY(1px);
 }
 
-.auth-link a {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.auth-link a:hover {
-    color: var(--accent-color);
-    text-decoration: underline;
-}
-
+/* Message styles */
 .error-message {
-    background: var(--error-color);
-    color: white;
-    padding: 0.8rem;
-    border-radius: 8px;
-    margin: 1rem 0;
+    color: #ff6b6b;
+    margin-top: 1rem;
     text-align: center;
-    display: none;
+    font-size: 0.9rem;
+    min-height: 1.2rem;
 }
 
 .loading {
+    color: #4a90e2;
     text-align: center;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Link styles */
+.auth-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+}
+
+.auth-link a {
+    color: #4a90e2;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.auth-link a:hover {
+    color: #357abd;
+    text-decoration: underline;
+}
+
+/* Home page specific styles */
+.home-container {
+    text-align: center;
+    max-width: 600px;
+}
+
+.welcome-section {
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.welcome-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #ffffff, #4a90e2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.user-email {
+    font-size: 1.2rem;
+    color: #4a90e2;
     margin: 1rem 0;
-    animation: pulse 1.5s infinite;
+    padding: 0.5rem;
+    background: rgba(74, 144, 226, 0.1);
+    border-radius: 8px;
+    display: inline-block;
 }
 
-@keyframes pulse {
-    0% { opacity: 0.8; }
-    50% { opacity: 0.4; }
-    100% { opacity: 0.8; }
+.actions-section {
+    margin-top: 2rem;
 }
 
+.logout-btn {
+    background: transparent;
+    border: 2px solid #ff6b6b;
+    color: #ff6b6b;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    max-width: 200px;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 107, 107, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive styles */
 @media (max-width: 480px) {
-    .auth-container {
+    .container, .auth-container {
         padding: 1.5rem;
-        margin: 1rem;
+    }
+
+    .container h1 {
+        font-size: 2rem;
+    }
+
+    .container p {
+        font-size: 1rem;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    input, button {
+        padding: 0.7rem;
+    }
+
+    .welcome-section h1 {
+        font-size: 2rem;
     }
     
-    h1 {
-        font-size: 1.8rem;
+    .user-email {
+        font-size: 1rem;
     }
 }
