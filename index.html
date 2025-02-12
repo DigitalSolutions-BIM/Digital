@@ -3,12 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <title>Startup</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('/api/placeholder/1920/1080');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:first-child {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .signup-btn {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Welcome To Digital Solutions & BIM Excellence Landpage</h1>
-        <p>Start Your Journy</p>
+        <p>Start Your Journey</p>
         <div class="button-group">
             <button onclick="location.href='login.html'">Log In</button>
             <button class="signup-btn" onclick="location.href='signup.html'">Create Account</button>
@@ -18,7 +83,7 @@
     <script src="firebase-config.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        // التحقق مما إذا كان المستخدم مسجل دخول
+        // Check if user is logged in
         auth.onAuthStateChanged(user => {
             if (user) {
                 window.location.href = 'home.html';
