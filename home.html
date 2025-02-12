@@ -1,45 +1,202 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>الصفحة الرئيسية</title>
+    <title>Home Page</title>
     <link rel="stylesheet" href="style.css">
     <!-- Firebase Dependencies -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="firebase-config.js"></script>
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .section-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .progress-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .progress-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
 </head>
 <body>
-    <div class="container home-container">
-        <div class="welcome-section">
-            <h1>مرحباً</h1>
-            <p id="user-email" class="user-email"></p>
+    <!-- Header with user info and logout -->
+    <header class="header">
+        <h1>Dashboard</h1>
+        <div class="user-info">
+            <p class="welcome-text">Welcome, <span id="user-name">Loading...</span></p>
+            <button id="logout-btn" class="logout-btn">Sign Out</button>
         </div>
-        <div class="actions-section">
-            <button id="logout-btn" class="logout-btn">تسجيل الخروج</button>
-        </div>
+    </header>
+
+    <div class="section-container">
+        <!-- Progress Section -->
+        <section class="section">
+            <h2 class="section-title">Progress</h2>
+            <div class="progress-cards">
+                <div class="progress-card">
+                    <h3>Tasks Completed</h3>
+                    <p id="tasks-completed">0/0</p>
+                </div>
+                <div class="progress-card">
+                    <h3>Current Status</h3>
+                    <p id="current-status">On Track</p>
+                </div>
+                <div class="progress-card">
+                    <h3>Achievement Level</h3>
+                    <p id="achievement-level">Beginner</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- What's New Section -->
+        <section class="section">
+            <h2 class="section-title">What's New</h2>
+            <div id="whats-new-content">
+                <ul>
+                    <li>New feature releases and updates will appear here</li>
+                    <li>Recent system improvements</li>
+                    <li>Latest announcements</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- What's Next Section -->
+        <section class="section">
+            <h2 class="section-title">What's Next</h2>
+            <div id="whats-next-content">
+                <ul>
+                    <li>Upcoming tasks and milestones</li>
+                    <li>Planned activities</li>
+                    <li>Future objectives</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Overview Section -->
+        <section class="section">
+            <h2 class="section-title">Overall Overview</h2>
+            <div id="overview-content">
+                <p>Your activity summary and key metrics will be displayed here.</p>
+                <div id="metrics-summary">
+                    <!-- Metrics will be populated dynamically -->
+                </div>
+            </div>
+        </section>
     </div>
 
     <script>
-        // التحقق من حالة تسجيل الدخول
+        // Check authentication state
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // إظهار البريد الإلكتروني للمستخدم
-                document.getElementById('user-email').textContent = user.email;
+                // Get user profile from Firestore
+                const db = firebase.firestore();
+                db.collection('users').doc(user.uid).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            document.getElementById('user-name').textContent = 
+                                `${userData.firstName} ${userData.lastName}`;
+                        } else {
+                            document.getElementById('user-name').textContent = 
+                                user.email;
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching user data:", error);
+                        document.getElementById('user-name').textContent = 
+                            user.email;
+                    });
             } else {
-                // إعادة التوجيه إلى صفحة تسجيل الدخول إذا لم يكن هناك مستخدم
+                // Redirect to login page if no user is logged in
                 window.location.href = 'login.html';
             }
         });
 
-        // تسجيل الخروج
+        // Handle sign out
         document.getElementById('logout-btn').addEventListener('click', () => {
-            firebase.auth().signOut().then(() => {
-                window.location.href = 'login.html';
-            }).catch((error) => {
-                console.error('Error signing out:', error);
-            });
+            firebase.auth().signOut()
+                .then(() => {
+                    window.location.href = 'login.html';
+                })
+                .catch((error) => {
+                    console.error('Error signing out:', error);
+                    alert('Error signing out. Please try again.');
+                });
         });
+
+        // Function to update dashboard data
+        function updateDashboard() {
+            // This function would be called to update the dashboard with real data
+            // For now, it's just a placeholder
+            document.getElementById('tasks-completed').textContent = "5/10";
+            document.getElementById('current-status').textContent = "On Track";
+            document.getElementById('achievement-level').textContent = "Intermediate";
+        }
+
+        // Initial dashboard update
+        updateDashboard();
     </script>
 </body>
 </html>
