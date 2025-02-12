@@ -10,62 +10,50 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="firebase-config.js"></script>
     <style>
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .user-info {
+        body {
+            background-color: #1a1a1a;
+            color: #e1e1e1;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #2d2d2d;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid #404040;
+        }
+
+        .welcome-container {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            gap: 0.5rem;
         }
 
         .welcome-text {
-            font-size: 1.1rem;
-            margin: 0;
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
         }
 
-        .section-container {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .section-title {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 0.5rem;
-        }
-
-        .progress-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .progress-card {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 6px;
-            border-left: 4px solid #007bff;
+        .user-name {
+            font-size: 1.5rem;
+            color: #4da6ff;
         }
 
         .logout-btn {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
             padding: 0.5rem 1rem;
             background-color: #dc3545;
             color: white;
@@ -78,16 +66,88 @@
         .logout-btn:hover {
             background-color: #c82333;
         }
+
+        .section-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            color: #4da6ff;
+            border-bottom: 2px solid #404040;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .progress-card {
+            background: #363636;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border-left: 4px solid #4da6ff;
+        }
+
+        .progress-card h3 {
+            color: #4da6ff;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-card p {
+            color: #ffffff;
+        }
+
+        ul {
+            list-style-position: inside;
+            color: #e1e1e1;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+        }
+
+        #metrics-summary {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #363636;
+            border-radius: 6px;
+        }
+
+        /* Hover effects */
+        .section:hover {
+            transform: translateY(-2px);
+            transition: transform 0.3s ease;
+        }
+
+        .progress-card:hover {
+            background: #404040;
+            transition: background-color 0.3s ease;
+        }
     </style>
 </head>
 <body>
-    <!-- Header with user info and logout -->
+    <!-- Header with centered welcome message -->
     <header class="header">
-        <h1>Dashboard</h1>
-        <div class="user-info">
-            <p class="welcome-text">Welcome, <span id="user-name">Loading...</span></p>
-            <button id="logout-btn" class="logout-btn">Sign Out</button>
+        <div class="welcome-container">
+            <h1 class="welcome-text">Welcome to Dashboard</h1>
+            <span class="user-name" id="user-name">Loading...</span>
         </div>
+        <button id="logout-btn" class="logout-btn">Sign Out</button>
     </header>
 
     <div class="section-container">
@@ -189,7 +249,6 @@
         // Function to update dashboard data
         function updateDashboard() {
             // This function would be called to update the dashboard with real data
-            // For now, it's just a placeholder
             document.getElementById('tasks-completed').textContent = "5/10";
             document.getElementById('current-status').textContent = "On Track";
             document.getElementById('achievement-level').textContent = "Intermediate";
