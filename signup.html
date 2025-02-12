@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
@@ -144,20 +144,20 @@
 
         } catch (error) {
             console.error("Error during signup:", error);
-            let errorMessage = 'حدث خطأ أثناء إنشاء الحساب';
+            let errorMessage = 'error Creating Account PLease contact administrator.';
 
             switch (error.code) {
                 case 'auth/email-already-in-use':
-                    errorMessage = 'البريد الإلكتروني مستخدم بالفعل';
+                    errorMessage = 'Email Already Exist';
                     break;
                 case 'auth/invalid-email':
-                    errorMessage = 'بريد إلكتروني غير صالح';
+                    errorMessage = 'Email Not Valid';
                     break;
                 case 'auth/weak-password':
-                    errorMessage = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                    errorMessage = 'Password must be more than 6 characters';
                     break;
                 case 'auth/operation-not-allowed':
-                    errorMessage = 'عملية غير مسموح بها';
+                    errorMessage = 'Un Authorized , Conatact Administrator';
                     break;
                 case 'permission-denied':
                     errorMessage = 'Firestore permission denied. Check your Firestore rules.';
