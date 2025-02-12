@@ -26,24 +26,23 @@
 
         .header {
             background-color: #2d2d2d;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             border-bottom: 1px solid #404040;
             margin-bottom: 2rem;
         }
 
         .welcome-container {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
+            gap: 1rem;
         }
 
         .welcome-text {
             font-size: 2rem;
             color: #ffffff;
-            margin-bottom: 0.5rem;
         }
 
         .user-name {
@@ -52,10 +51,6 @@
         }
 
         .logout-btn {
-            position: absolute;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
             padding: 0.5rem 1rem;
             background-color: #dc3545;
             color: white;
@@ -72,7 +67,7 @@
         .fullscreen-container {
             display: flex;
             flex-direction: column;
-            min-height: calc(100vh - 100px); /* Adjust based on header height */
+            min-height: calc(100vh - 100px);
         }
 
         .section-container {
@@ -154,19 +149,13 @@
             }
 
             .header {
-                padding: 1rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
             }
 
-            .logout-btn {
-                right: 1rem;
-            }
-
-            .welcome-text {
-                font-size: 1.5rem;
-            }
-
-            .user-name {
-                font-size: 1.2rem;
+            .welcome-container {
+                flex-direction: column;
             }
         }
     </style>
@@ -205,36 +194,28 @@
             <!-- What's New Section -->
             <section class="section">
                 <h2 class="section-title">What's New</h2>
-                <div id="whats-new-content">
-                    <ul>
-                        <li>New feature releases and updates will appear here</li>
-                        <li>Recent system improvements</li>
-                        <li>Latest announcements</li>
-                    </ul>
-                </div>
+                <ul>
+                    <li>New feature releases and updates will appear here</li>
+                    <li>Recent system improvements</li>
+                    <li>Latest announcements</li>
+                </ul>
             </section>
 
             <!-- What's Next Section -->
             <section class="section">
                 <h2 class="section-title">What's Next</h2>
-                <div id="whats-next-content">
-                    <ul>
-                        <li>Upcoming tasks and milestones</li>
-                        <li>Planned activities</li>
-                        <li>Future objectives</li>
-                    </ul>
-                </div>
+                <ul>
+                    <li>Upcoming tasks and milestones</li>
+                    <li>Planned activities</li>
+                    <li>Future objectives</li>
+                </ul>
             </section>
 
             <!-- Overview Section -->
             <section class="section">
                 <h2 class="section-title">Overall Overview</h2>
-                <div id="overview-content">
-                    <p>Your activity summary and key metrics will be displayed here.</p>
-                    <div id="metrics-summary">
-                        <!-- Metrics will be populated dynamically -->
-                    </div>
-                </div>
+                <p>Your activity summary and key metrics will be displayed here.</p>
+                <div id="metrics-summary"></div>
             </section>
         </div>
     </div>
@@ -243,27 +224,22 @@
         // Check authentication state
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // Get user profile from Firestore using uppercase email as document ID
                 const db = firebase.firestore();
                 const upperCaseEmail = user.email.toUpperCase();
                 
                 db.collection('users').doc(upperCaseEmail).get()
                     .then((doc) => {
                         if (doc.exists) {
-                            const userData = doc.data();
                             document.getElementById('user-name').textContent = 
-                                `${userData.firstName} ${userData.lastName}`;
+                                `${doc.data().firstName} ${doc.data().lastName}`;
                         } else {
-                            console.error("No user document found for:", upperCaseEmail);
                             document.getElementById('user-name').textContent = user.email;
                         }
                     })
-                    .catch((error) => {
-                        console.error("Error fetching user data:", error);
+                    .catch(() => {
                         document.getElementById('user-name').textContent = user.email;
                     });
             } else {
-                // Redirect to login page if no user is logged in
                 window.location.href = 'login.html';
             }
         });
@@ -271,25 +247,14 @@
         // Handle sign out
         document.getElementById('logout-btn').addEventListener('click', () => {
             firebase.auth().signOut()
-                .then(() => {
-                    window.location.href = 'login.html';
-                })
-                .catch((error) => {
-                    console.error('Error signing out:', error);
-                    alert('Error signing out. Please try again.');
-                });
+                .then(() => window.location.href = 'login.html')
+                .catch(() => alert('Error signing out. Please try again.'));
         });
 
-        // Function to update dashboard data
-        function updateDashboard() {
-            // This function would be called to update the dashboard with real data
-            document.getElementById('tasks-completed').textContent = "5/10";
-            document.getElementById('current-status').textContent = "On Track";
-            document.getElementById('achievement-level').textContent = "Intermediate";
-        }
-
-        // Initial dashboard update
-        updateDashboard();
+        // Update dashboard
+        document.getElementById('tasks-completed').textContent = "5/10";
+        document.getElementById('current-status').textContent = "On Track";
+        document.getElementById('achievement-level').textContent = "Intermediate";
     </script>
 </body>
 </html>
