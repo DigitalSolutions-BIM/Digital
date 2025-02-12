@@ -83,7 +83,7 @@
     <div class="overlay" id="overlay"></div>
     <div class="success-popup" id="success-popup">
         <h2>Account Created Successfully! ✅</h2>
-        <h3>Verification Mail Has been Sent </h3>
+        <h3>Verification Email Has Been Sent</h3>
         <p>Redirecting to login page in <span id="countdown">10</span> seconds...</p>
     </div>
 
@@ -117,6 +117,7 @@
             // Create user in Authentication
             const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
+            console.log("User created successfully:", user.uid);
 
             // Create document ID from uppercase email
             const docId = email.toUpperCase();
@@ -158,13 +159,11 @@
                 case 'auth/operation-not-allowed':
                     errorMessage = 'عملية غير مسموح بها';
                     break;
+                case 'permission-denied':
+                    errorMessage = 'Firestore permission denied. Check your Firestore rules.';
+                    break;
                 default:
-                    // Handle Firestore errors
-                    if (error.message.includes('invalid document ID')) {
-                        errorMessage = 'Invalid email format for document ID';
-                    } else if (error.message.includes('permission-denied')) {
-                        errorMessage = 'Firestore permission denied. Check your Firestore rules.';
-                    }
+                    errorMessage = error.message;
                     break;
             }
             errorElement.textContent = errorMessage;
