@@ -24,8 +24,7 @@
             </div>
             <button type="submit" id="submit-btn">Log In</button>
             <div id="error-message" class="error-message"></div>
-            <div id="loading" class="loading" style="display: none;">
-In Progress Login ....            </div>
+            <div id="loading" class="loading" style="display: none;">In Progress Login ....</div>
         </form>
         <p class="auth-link">
             Dont Have Account? <a href="signup.html">Create New Account</a>
@@ -39,7 +38,6 @@ In Progress Login ....            </div>
         // التحقق من حالة تسجيل الدخول
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // إذا كان المستخدم مسجل دخول بالفعل، انتقل إلى الصفحة الرئيسية
                 window.location.href = 'home.html';
             }
         });
@@ -54,9 +52,15 @@ In Progress Login ....            </div>
             errorElement.textContent = '';  // Clear previous errors
 
             try {
-                await firebase.auth().signInWithEmailAndPassword(email, password);
-                // إعادة توجيه المستخدم بعد تسجيل الدخول الناجح
-                window.location.href = 'home.html';
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                if (user.emailVerified) {
+                    window.location.href = 'home.html';
+                } else {
+                    errorElement.textContent = 'Kindly verify your email to login.';
+                    firebase.auth().signOut(); // Sign out unverified users
+                }
             } catch (error) {
                 let errorMessage = 'Error In Log In';
                 switch (error.code) {
