@@ -37,6 +37,14 @@
     </div>
 
     <script>
+        // التحقق من حالة تسجيل الدخول
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // إذا كان المستخدم مسجل دخول بالفعل، انتقل إلى الصفحة الرئيسية
+                window.location.href = 'home.html';
+            }
+        });
+
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             toggleLoading(true);
@@ -49,7 +57,7 @@
             try {
                 await firebase.auth().signInWithEmailAndPassword(email, password);
                 // إعادة توجيه المستخدم بعد تسجيل الدخول الناجح
-                window.location.href = 'index.html';
+                window.location.href = 'home.html';
             } catch (error) {
                 let errorMessage = 'حدث خطأ أثناء تسجيل الدخول';
                 switch (error.code) {
