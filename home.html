@@ -21,6 +21,7 @@
             color: #e1e1e1;
             font-family: Arial, sans-serif;
             min-height: 100vh;
+            position: relative;
         }
 
         .header {
@@ -29,6 +30,7 @@
             text-align: center;
             position: relative;
             border-bottom: 1px solid #404040;
+            margin-bottom: 2rem;
         }
 
         .welcome-container {
@@ -67,10 +69,18 @@
             background-color: #c82333;
         }
 
+        .fullscreen-container {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 100px); /* Adjust based on header height */
+        }
+
         .section-container {
-            padding: 2rem;
+            flex: 1;
+            padding: 0 2rem 2rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .section {
@@ -128,7 +138,6 @@
             border-radius: 6px;
         }
 
-        /* Hover effects */
         .section:hover {
             transform: translateY(-2px);
             transition: transform 0.3s ease;
@@ -138,95 +147,120 @@
             background: #404040;
             transition: background-color 0.3s ease;
         }
+
+        @media screen and (max-width: 768px) {
+            .section-container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .logout-btn {
+                right: 1rem;
+            }
+
+            .welcome-text {
+                font-size: 1.5rem;
+            }
+
+            .user-name {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Header with centered welcome message -->
-    <header class="header">
-        <div class="welcome-container">
-            <h1 class="welcome-text">Welcome to Dashboard</h1>
-            <span class="user-name" id="user-name">Loading...</span>
+    <div class="fullscreen-container">
+        <!-- Header with centered welcome message -->
+        <header class="header">
+            <div class="welcome-container">
+                <h1 class="welcome-text">Welcome to Dashboard</h1>
+                <span class="user-name" id="user-name">Loading...</span>
+            </div>
+            <button id="logout-btn" class="logout-btn">Sign Out</button>
+        </header>
+
+        <div class="section-container">
+            <!-- Progress Section -->
+            <section class="section">
+                <h2 class="section-title">Progress</h2>
+                <div class="progress-cards">
+                    <div class="progress-card">
+                        <h3>Tasks Completed</h3>
+                        <p id="tasks-completed">0/0</p>
+                    </div>
+                    <div class="progress-card">
+                        <h3>Current Status</h3>
+                        <p id="current-status">On Track</p>
+                    </div>
+                    <div class="progress-card">
+                        <h3>Achievement Level</h3>
+                        <p id="achievement-level">Beginner</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- What's New Section -->
+            <section class="section">
+                <h2 class="section-title">What's New</h2>
+                <div id="whats-new-content">
+                    <ul>
+                        <li>New feature releases and updates will appear here</li>
+                        <li>Recent system improvements</li>
+                        <li>Latest announcements</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- What's Next Section -->
+            <section class="section">
+                <h2 class="section-title">What's Next</h2>
+                <div id="whats-next-content">
+                    <ul>
+                        <li>Upcoming tasks and milestones</li>
+                        <li>Planned activities</li>
+                        <li>Future objectives</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Overview Section -->
+            <section class="section">
+                <h2 class="section-title">Overall Overview</h2>
+                <div id="overview-content">
+                    <p>Your activity summary and key metrics will be displayed here.</p>
+                    <div id="metrics-summary">
+                        <!-- Metrics will be populated dynamically -->
+                    </div>
+                </div>
+            </section>
         </div>
-        <button id="logout-btn" class="logout-btn">Sign Out</button>
-    </header>
-
-    <div class="section-container">
-        <!-- Progress Section -->
-        <section class="section">
-            <h2 class="section-title">Progress</h2>
-            <div class="progress-cards">
-                <div class="progress-card">
-                    <h3>Tasks Completed</h3>
-                    <p id="tasks-completed">0/0</p>
-                </div>
-                <div class="progress-card">
-                    <h3>Current Status</h3>
-                    <p id="current-status">On Track</p>
-                </div>
-                <div class="progress-card">
-                    <h3>Achievement Level</h3>
-                    <p id="achievement-level">Beginner</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- What's New Section -->
-        <section class="section">
-            <h2 class="section-title">What's New</h2>
-            <div id="whats-new-content">
-                <ul>
-                    <li>New feature releases and updates will appear here</li>
-                    <li>Recent system improvements</li>
-                    <li>Latest announcements</li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- What's Next Section -->
-        <section class="section">
-            <h2 class="section-title">What's Next</h2>
-            <div id="whats-next-content">
-                <ul>
-                    <li>Upcoming tasks and milestones</li>
-                    <li>Planned activities</li>
-                    <li>Future objectives</li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- Overview Section -->
-        <section class="section">
-            <h2 class="section-title">Overall Overview</h2>
-            <div id="overview-content">
-                <p>Your activity summary and key metrics will be displayed here.</p>
-                <div id="metrics-summary">
-                    <!-- Metrics will be populated dynamically -->
-                </div>
-            </div>
-        </section>
     </div>
 
     <script>
         // Check authentication state
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // Get user profile from Firestore
+                // Get user profile from Firestore using uppercase email as document ID
                 const db = firebase.firestore();
-                db.collection('users').doc(user.uid).get()
+                const upperCaseEmail = user.email.toUpperCase();
+                
+                db.collection('users').doc(upperCaseEmail).get()
                     .then((doc) => {
                         if (doc.exists) {
                             const userData = doc.data();
                             document.getElementById('user-name').textContent = 
                                 `${userData.firstName} ${userData.lastName}`;
                         } else {
-                            document.getElementById('user-name').textContent = 
-                                user.email;
+                            console.error("No user document found for:", upperCaseEmail);
+                            document.getElementById('user-name').textContent = user.email;
                         }
                     })
                     .catch((error) => {
                         console.error("Error fetching user data:", error);
-                        document.getElementById('user-name').textContent = 
-                            user.email;
+                        document.getElementById('user-name').textContent = user.email;
                     });
             } else {
                 // Redirect to login page if no user is logged in
