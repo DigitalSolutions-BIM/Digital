@@ -24,24 +24,30 @@
             </div>
             <button type="submit" id="submit-btn">Log In</button>
             <div id="error-message" class="error-message"></div>
+            <div id="verification-message" class="verification-message"></div>
             <div id="loading" class="loading" style="display: none;">In Progress Login ....</div>
         </form>
         <p class="auth-link">
-            Dont Have Account? <a href="signup.html">Create New Account</a>
+            Don't Have Account? <a href="signup.html">Create New Account</a>
         </p>
         <p class="auth-link">
             <a href="reset-password.html">Forget Password</a>
         </p>
+        <div id="resend-verification" style="display: none;">
+            <p>Haven't received the verification email?</p>
+            <button onclick="resendVerificationEmail()" class="resend-btn">Resend Verification Email</button>
+        </div>
     </div>
 
     <script>
-        // التحقق من حالة تسجيل الدخول
+        // Check authentication state
         firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
+            if (user && user.emailVerified) {
                 window.location.href = 'home.html';
             }
         });
 
+        // Handle login form submission
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             toggleLoading(true);
@@ -49,17 +55,27 @@
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const errorElement = document.getElementById('error-message');
-            errorElement.textContent = '';  // Clear previous errors
+            const verificationMessage = document.getElementById('verification-message');
+            const resendVerification = document.getElementById('resend-verification');
+            
+            // Clear previous messages
+            errorElement.textContent = '';
+            verificationMessage.textContent = '';
+            resendVerification.style.display = 'none';
 
             try {
                 const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
-                
-                if (user.emailVerified) {
-                    window.location.href = 'home.html';
+
+                if (!user.emailVerified) {
+                    // Handle unverified email
+                    await firebase.auth().signOut();
+                    verificationMessage.textContent = 'Please verify your email before logging in. Check your inbox for the verification link.';
+                    resendVerification.style.display = 'block';
+                    // Store email in session storage for resend functionality
+                    sessionStorage.setItem('userEmail', email);
                 } else {
-                    errorElement.textContent = 'Kindly verify your email to login.';
-                    firebase.auth().signOut(); // Sign out unverified users
+                    window.location.href = 'home.html';
                 }
             } catch (error) {
                 let errorMessage = 'Error In Log In';
@@ -76,12 +92,40 @@
                     case 'auth/wrong-password':
                         errorMessage = 'Password Incorrect';
                         break;
+                    default:
+                        errorMessage = 'An unexpected error occurred. Please try again.';
                 }
                 errorElement.textContent = errorMessage;
             } finally {
                 toggleLoading(false);
             }
         });
+
+        // Function to resend verification email
+        async function resendVerificationEmail() {
+            const email = sessionStorage.getItem('userEmail');
+            if (!email) return;
+
+            toggleLoading(true);
+            try {
+                // Sign in again to get user object
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(
+                    email,
+                    document.getElementById('password').value.trim()
+                );
+                const user = userCredential.user;
+                
+                await user.sendEmailVerification();
+                document.getElementById('verification-message').textContent = 'Verification email has been resent. Please check your inbox.';
+                
+                // Sign out after sending verification email
+                await firebase.auth().signOut();
+            } catch (error) {
+                document.getElementById('error-message').textContent = 'Error sending verification email. Please try again.';
+            } finally {
+                toggleLoading(false);
+            }
+        }
 
         function toggleLoading(show) {
             document.getElementById('loading').style.display = show ? 'block' : 'none';
