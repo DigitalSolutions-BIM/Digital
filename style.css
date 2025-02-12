@@ -29,6 +29,29 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    color: red;
+    margin: 1rem 0;
+}
+
+.loading {
+    color: #007bff;
+    margin: 1rem 0;
+}
+
+.success-popup h2 {
+    color: green;
+    margin-bottom: 1rem;
+}
+
+.success-popup p {
+    font-size: 1.1rem;
+}
+
 /* Welcome page styles */
 .container {
     text-align: center;
