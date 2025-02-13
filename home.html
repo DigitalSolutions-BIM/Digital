@@ -298,12 +298,20 @@
                 // Fetch user data
                 db.collection('users').doc(upperCaseEmail).get()
                     .then((doc) => {
-                        if (doc.exists && doc.data().firstName && doc.data().lastName) {
-                            const firstName = doc.data().firstName;
-                            const lastName = doc.data().lastName;
-                            document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
+                        if (doc.exists) {
+                            // Get the firstName and lastName, handle potential case variations
+                            const firstName = doc.data().firstName || doc.data().firstname || doc.data().FIRSTNAME;
+                            const lastName = doc.data().lastName || doc.data().lastname || doc.data().LASTNAME;
+                            
+                            if (firstName && lastName) {
+                                // Properly capitalize names for display
+                                const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+                                const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
+                                document.getElementById('user-name').textContent = `${formattedFirstName} ${formattedLastName}`;
+                            } else {
+                                document.getElementById('user-name').textContent = 'Please update your profile';
+                            }
                         } else {
-                            // If no name data is found, show a message asking to update profile
                             document.getElementById('user-name').textContent = 'Please update your profile';
                         }
                     })
