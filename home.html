@@ -256,7 +256,7 @@
         </div>
     </div>
 
-    <script>
+   <script>
         // Add loading state to elements
         function setLoadingState(isLoading) {
             const elements = ['pdf-preview', 'test-environment', 'videos-review'];
@@ -276,7 +276,7 @@
             const bar = document.getElementById(id);
             const percentage = parseFloat(value);
             if (!isNaN(percentage)) {
-                bar.style.width = ${percentage}%;
+                bar.style.width = `${percentage}%`;
             }
         }
 
@@ -307,7 +307,7 @@
                     .then((doc) => {
                         if (doc.exists) {
                             document.getElementById('user-name').textContent = 
-                                ${doc.data().firstName} ${doc.data().lastName};
+                                `${doc.data().firstName} ${doc.data().lastName}`;
                         } else {
                             document.getElementById('user-name').textContent = user.email;
                         }
@@ -335,26 +335,26 @@
                             for (const [elementId, fieldName] of Object.entries(fields)) {
                                 const value = progressData[fieldName] || '0%';
                                 document.getElementById(elementId).textContent = value;
-                                updateProgressBar(${elementId}-bar, value.replace('%', ''));
+                                updateProgressBar(`${elementId}-bar`, value.replace('%', ''));
                             }
 
                             // Calculate and update overall progress
                             const overallProgress = calculateOverallProgress(progressData);
                             document.getElementById('metrics-summary').innerHTML = 
-                                <p>Overall Progress: ${overallProgress.toFixed(1)}%</p>
-                            ;
+                                `<p>Overall Progress: ${overallProgress.toFixed(1)}%</p>`;
                             updateProgressBar('overall-progress-bar', overallProgress);
                         } else {
                             console.log("No progress data found for user");
-                            // Set default values
+                            // Show waiting message
                             const elements = ['pdf-preview', 'test-environment', 'videos-review'];
                             elements.forEach(id => {
-                                document.getElementById(id).textContent = '0%';
-                                updateProgressBar(${id}-bar, 0);
+                                const element = document.getElementById(id);
+                                element.textContent = 'Waiting for data from your administrator';
+                                element.classList.add('error-text');
+                                updateProgressBar(`${id}-bar`, 0);
                             });
                             document.getElementById('metrics-summary').innerHTML = 
-                                <p>Overall Progress: 0%</p>
-                            ;
+                                `<p class="error-text">Waiting for data from your administrator</p>`;
                             updateProgressBar('overall-progress-bar', 0);
                         }
                     })
@@ -369,8 +369,7 @@
                             element.classList.add('error-text');
                         });
                         document.getElementById('metrics-summary').innerHTML = 
-                            <p class="error-text">Error calculating overall progress</p>
-                        ;
+                            `<p class="error-text">Error calculating overall progress</p>`;
                     });
             } else {
                 window.location.href = 'login.html';
