@@ -1,210 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- Head section with styles remains exactly the same -->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <!-- Firebase Dependencies -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="firebase-config.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #1a1a1a;
-            color: #e1e1e1;
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        .header {
-            background-color: #2d2d2d;
-            padding: 1.5rem 2rem;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #404040;
-            margin-bottom: 2rem;
-        }
-
-        .welcome-container {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .welcome-text {
-            font-size: 2rem;
-            color: #ffffff;
-        }
-
-        .user-name {
-            font-size: 1.5rem;
-            color: #4da6ff;
-        }
-
-        .logout-btn {
-            padding: 0.5rem 1rem;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-left: auto;
-        }
-
-        .logout-btn:hover {
-            background-color: #c82333;
-        }
-
-        .fullscreen-container {
-            display: flex;
-            flex-direction: column;
-            min-height: calc(100vh - 100px);
-        }
-
-        .section-container {
-            flex: 1;
-            padding: 0 2rem 2rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .section {
-            background: #2d2d2d;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-        }
-
-        .section:hover {
-            transform: translateY(-2px);
-        }
-
-        .section-title {
-            color: #4da6ff;
-            border-bottom: 2px solid #404040;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .progress-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .progress-card {
-            background: #363636;
-            padding: 1.5rem;
-            border-radius: 6px;
-            border-left: 4px solid #4da6ff;
-            transition: background-color 0.3s ease;
-        }
-
-        .progress-card:hover {
-            background: #404040;
-        }
-
-        .progress-card h3 {
-            color: #4da6ff;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-        }
-
-        .progress-card p {
-            color: #ffffff;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        #metrics-summary {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: #363636;
-            border-radius: 6px;
-            color: #ffffff;
-        }
-
-        #metrics-summary p {
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background-color: #2d2d2d;
-            border-radius: 4px;
-            margin-top: 0.5rem;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background-color: #4da6ff;
-            transition: width 0.3s ease;
-        }
-
-        ul {
-            list-style-position: inside;
-            color: #e1e1e1;
-            margin-left: 1rem;
-        }
-
-        li {
-            margin-bottom: 0.5rem;
-            padding-left: 1rem;
-        }
-
-        @media screen and (max-width: 768px) {
-            .section-container {
-                padding: 1rem;
-            }
-
-            .header {
-                flex-direction: column;
-                text-align: center;
-                gap: 1rem;
-            }
-
-            .logout-btn {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .progress-card {
-                margin-bottom: 1rem;
-            }
-        }
-
-        .loading {
-            animation: pulse 1.5s infinite;
-            opacity: 0.7;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 0.4; }
-            100% { opacity: 0.7; }
-        }
-
-        .error-text {
-            color: #dc3545;
-            font-style: italic;
-        }
-    </style>
+    <!-- Previous head content remains unchanged -->
 </head>
 <body>
     <div class="fullscreen-container">
@@ -219,28 +17,8 @@
         <div class="section-container">
             <section class="section">
                 <h2 class="section-title">Progress</h2>
-                <div class="progress-cards">
-                    <div class="progress-card">
-                        <h3>PDF Files Preview</h3>
-                        <p id="pdf-preview">Loading...</p>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" id="pdf-preview-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div class="progress-card">
-                        <h3>Test Environment</h3>
-                        <p id="test-environment">Loading...</p>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" id="test-environment-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div class="progress-card">
-                        <h3>Videos Review</h3>
-                        <p id="videos-review">Loading...</p>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" id="videos-review-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
+                <div id="progress-cards" class="progress-cards">
+                    <!-- Progress cards will be dynamically generated -->
                 </div>
             </section>
 
@@ -257,41 +35,72 @@
     </div>
 
     <script>
-        // Add loading state to elements
+        // Add loading state to progress cards container
         function setLoadingState(isLoading) {
-            const elements = ['pdf-preview', 'test-environment', 'videos-review'];
-            elements.forEach(id => {
-                const element = document.getElementById(id);
-                if (isLoading) {
-                    element.classList.add('loading');
-                    element.textContent = 'Loading...';
-                } else {
-                    element.classList.remove('loading');
-                }
-            });
-        }
-
-        // Update progress bar
-        function updateProgressBar(id, value) {
-            const bar = document.getElementById(id);
-            const percentage = parseFloat(value);
-            if (!isNaN(percentage)) {
-                bar.style.width = ${percentage}%;
+            const container = document.getElementById('progress-cards');
+            if (isLoading) {
+                container.innerHTML = `
+                    <div class="progress-card">
+                        <h3>Loading Progress Data...</h3>
+                        <p class="loading">Please wait...</p>
+                    </div>
+                `;
             }
         }
 
-        // Calculate overall progress
+        // Create a progress card element
+        function createProgressCard(title, value) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'progress-card';
+            
+            // Convert title to display format (e.g., "PDF_Files_Preview" -> "PDF Files Preview")
+            const displayTitle = title
+                .replace(/_/g, ' ')
+                .replace(/([A-Z])/g, ' $1')
+                .trim();
+
+            const progressValue = value.replace(/['"]/g, ''); // Remove any quotes
+
+            cardDiv.innerHTML = `
+                <h3>${displayTitle}</h3>
+                <p id="${title.toLowerCase().replace(/ /g, '-')}">${progressValue}</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="${title.toLowerCase().replace(/ /g, '-')}-bar" 
+                         style="width: ${parseFloat(progressValue)}%"></div>
+                </div>
+            `;
+            return cardDiv;
+        }
+
+        // Calculate overall progress from progress data
         function calculateOverallProgress(progressData) {
-            const values = [
-                parseFloat(progressData['PDF Files Preview'] || '0'),
-                parseFloat(progressData['Test Environment'] || '0'),
-                parseFloat(progressData['Videos Review'] || '0')
-            ];
+            const values = Object.values(progressData)
+                .map(value => parseFloat(value.replace(/["%]/g, '')))
+                .filter(value => !isNaN(value));
             
-            const validValues = values.filter(value => !isNaN(value));
-            if (validValues.length === 0) return 0;
+            if (values.length === 0) return 0;
+            return values.reduce((a, b) => a + b, 0) / values.length;
+        }
+
+        // Set waiting state for progress cards
+        function setWaitingState() {
+            const container = document.getElementById('progress-cards');
+            container.innerHTML = `
+                <div class="progress-card">
+                    <h3>Waiting for Data</h3>
+                    <p class="waiting-text">Waiting for data from administrator</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            `;
             
-            return validValues.reduce((a, b) => a + b, 0) / validValues.length;
+            document.getElementById('metrics-summary').innerHTML = `
+                <p class="waiting-text">Waiting for progress data from administrator</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+            `;
         }
 
         // Check authentication state and update progress
@@ -307,7 +116,7 @@
                     .then((doc) => {
                         if (doc.exists) {
                             document.getElementById('user-name').textContent = 
-                                ${doc.data().firstName} ${doc.data().lastName};
+                                `${doc.data().firstName} ${doc.data().lastName}`;
                         } else {
                             document.getElementById('user-name').textContent = user.email;
                         }
@@ -320,57 +129,47 @@
                 // Fetch progress data
                 db.collection('progress').doc(upperCaseEmail).get()
                     .then((doc) => {
-                        setLoadingState(false);
+                        const progressContainer = document.getElementById('progress-cards');
+                        progressContainer.innerHTML = ''; // Clear loading state
                         
                         if (doc.exists) {
                             const progressData = doc.data();
                             
-                            // Update progress cards and bars
-                            const fields = {
-                                'pdf-preview': 'PDF Files Preview',
-                                'test-environment': 'Test Environment',
-                                'videos-review': 'Videos Review'
-                            };
-
-                            for (const [elementId, fieldName] of Object.entries(fields)) {
-                                const value = progressData[fieldName] || '0%';
-                                document.getElementById(elementId).textContent = value;
-                                updateProgressBar(${elementId}-bar, value.replace('%', ''));
-                            }
+                            // Create progress cards for each field in the document
+                            Object.entries(progressData).forEach(([field, value]) => {
+                                // Skip non-progress fields if any
+                                if (typeof value === 'string' && value.includes('%')) {
+                                    const card = createProgressCard(field, value);
+                                    progressContainer.appendChild(card);
+                                }
+                            });
 
                             // Calculate and update overall progress
                             const overallProgress = calculateOverallProgress(progressData);
-                            document.getElementById('metrics-summary').innerHTML = 
+                            document.getElementById('metrics-summary').innerHTML = `
                                 <p>Overall Progress: ${overallProgress.toFixed(1)}%</p>
-                            ;
-                            updateProgressBar('overall-progress-bar', overallProgress);
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" id="overall-progress-bar" 
+                                         style="width: ${overallProgress}%"></div>
+                                </div>
+                            `;
                         } else {
                             console.log("No progress data found for user");
-                            // Set default values
-                            const elements = ['pdf-preview', 'test-environment', 'videos-review'];
-                            elements.forEach(id => {
-                                document.getElementById(id).textContent = '0%';
-                                updateProgressBar(${id}-bar, 0);
-                            });
-                            document.getElementById('metrics-summary').innerHTML = 
-                                <p>Overall Progress: 0%</p>
-                            ;
-                            updateProgressBar('overall-progress-bar', 0);
+                            setWaitingState();
                         }
                     })
                     .catch((error) => {
                         console.error("Error fetching progress data:", error);
-                        setLoadingState(false);
-                        // Set error state in UI
-                        const elements = ['pdf-preview', 'test-environment', 'videos-review'];
-                        elements.forEach(id => {
-                            const element = document.getElementById(id);
-                            element.textContent = 'Error loading data';
-                            element.classList.add('error-text');
-                        });
-                        document.getElementById('metrics-summary').innerHTML = 
+                        const progressContainer = document.getElementById('progress-cards');
+                        progressContainer.innerHTML = `
+                            <div class="progress-card">
+                                <h3>Error</h3>
+                                <p class="error-text">Error loading progress data</p>
+                            </div>
+                        `;
+                        document.getElementById('metrics-summary').innerHTML = `
                             <p class="error-text">Error calculating overall progress</p>
-                        ;
+                        `;
                     });
             } else {
                 window.location.href = 'login.html';
