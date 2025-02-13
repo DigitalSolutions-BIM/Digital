@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home Page</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
     <!-- Firebase Dependencies -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -56,7 +56,7 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
-            margin-left: auto; /* Pushes button to the right */
+            margin-left: auto;
         }
 
         .logout-btn:hover {
@@ -83,6 +83,11 @@
             padding: 1.5rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
         }
 
         .section-title {
@@ -90,6 +95,7 @@
             border-bottom: 2px solid #404040;
             padding-bottom: 0.5rem;
             margin-bottom: 1rem;
+            font-size: 1.5rem;
         }
 
         .progress-cards {
@@ -104,25 +110,23 @@
             padding: 1.5rem;
             border-radius: 6px;
             border-left: 4px solid #4da6ff;
+            transition: background-color 0.3s ease;
+        }
+
+        .progress-card:hover {
+            background: #404040;
         }
 
         .progress-card h3 {
             color: #4da6ff;
             margin-bottom: 0.5rem;
+            font-size: 1.2rem;
         }
 
         .progress-card p {
             color: #ffffff;
-        }
-
-        ul {
-            list-style-position: inside;
-            color: #e1e1e1;
-        }
-
-        li {
-            margin-bottom: 0.5rem;
-            padding-left: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
         }
 
         #metrics-summary {
@@ -130,16 +134,38 @@
             padding: 1rem;
             background: #363636;
             border-radius: 6px;
+            color: #ffffff;
         }
 
-        .section:hover {
-            transform: translateY(-2px);
-            transition: transform 0.3s ease;
+        #metrics-summary p {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
 
-        .progress-card:hover {
-            background: #404040;
-            transition: background-color 0.3s ease;
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #2d2d2d;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4da6ff;
+            transition: width 0.3s ease;
+        }
+
+        ul {
+            list-style-position: inside;
+            color: #e1e1e1;
+            margin-left: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
         }
 
         @media screen and (max-width: 768px) {
@@ -156,14 +182,32 @@
             .logout-btn {
                 margin-left: 0;
                 width: 100%;
-                text-align: center;
             }
+
+            .progress-card {
+                margin-bottom: 1rem;
+            }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 0.4; }
+            100% { opacity: 0.7; }
+        }
+
+        .error-text {
+            color: #dc3545;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
     <div class="fullscreen-container">
-        <!-- Header with Welcome Message -->
         <header class="header">
             <div class="welcome-container">
                 <h1 class="welcome-text">Welcome</h1>
@@ -173,61 +217,92 @@
         </header>
 
         <div class="section-container">
-            <!-- Progress Section -->
             <section class="section">
                 <h2 class="section-title">Progress</h2>
                 <div class="progress-cards">
                     <div class="progress-card">
-                        <h3>Tasks Completed</h3>
-                        <p id="tasks-completed">0/0</p>
+                        <h3>PDF Files Preview</h3>
+                        <p id="pdf-preview">Loading...</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="pdf-preview-bar" style="width: 0%"></div>
+                        </div>
                     </div>
                     <div class="progress-card">
-                        <h3>Current Status</h3>
-                        <p id="current-status">On Track</p>
+                        <h3>Test Environment</h3>
+                        <p id="test-environment">Loading...</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="test-environment-bar" style="width: 0%"></div>
+                        </div>
                     </div>
                     <div class="progress-card">
-                        <h3>Achievement Level</h3>
-                        <p id="achievement-level">Beginner</p>
+                        <h3>Videos Review</h3>
+                        <p id="videos-review">Loading...</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="videos-review-bar" style="width: 0%"></div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- What's New Section -->
             <section class="section">
-                <h2 class="section-title">What's New</h2>
-                <ul>
-                    <li>New feature releases and updates will appear here</li>
-                    <li>Recent system improvements</li>
-                    <li>Latest announcements</li>
-                </ul>
-            </section>
-
-            <!-- What's Next Section -->
-            <section class="section">
-                <h2 class="section-title">What's Next</h2>
-                <ul>
-                    <li>Upcoming tasks and milestones</li>
-                    <li>Planned activities</li>
-                    <li>Future objectives</li>
-                </ul>
-            </section>
-
-            <!-- Overview Section -->
-            <section class="section">
-                <h2 class="section-title">Overall Overview</h2>
-                <p>Your activity summary and key metrics will be displayed here.</p>
-                <div id="metrics-summary"></div>
+                <h2 class="section-title">Overall Progress</h2>
+                <div id="metrics-summary">
+                    <p>Calculating overall progress...</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="overall-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
             </section>
         </div>
     </div>
 
     <script>
-        // Check authentication state
+        // Add loading state to elements
+        function setLoadingState(isLoading) {
+            const elements = ['pdf-preview', 'test-environment', 'videos-review'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (isLoading) {
+                    element.classList.add('loading');
+                    element.textContent = 'Loading...';
+                } else {
+                    element.classList.remove('loading');
+                }
+            });
+        }
+
+        // Update progress bar
+        function updateProgressBar(id, value) {
+            const bar = document.getElementById(id);
+            const percentage = parseFloat(value);
+            if (!isNaN(percentage)) {
+                bar.style.width = `${percentage}%`;
+            }
+        }
+
+        // Calculate overall progress
+        function calculateOverallProgress(progressData) {
+            const values = [
+                parseFloat(progressData['PDF Files Preview'] || '0'),
+                parseFloat(progressData['Test Environment'] || '0'),
+                parseFloat(progressData['Videos Review'] || '0')
+            ];
+            
+            const validValues = values.filter(value => !isNaN(value));
+            if (validValues.length === 0) return 0;
+            
+            return validValues.reduce((a, b) => a + b, 0) / validValues.length;
+        }
+
+        // Check authentication state and update progress
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 const db = firebase.firestore();
                 const upperCaseEmail = user.email.toUpperCase();
                 
+                setLoadingState(true);
+
+                // Fetch user data
                 db.collection('users').doc(upperCaseEmail).get()
                     .then((doc) => {
                         if (doc.exists) {
@@ -237,8 +312,65 @@
                             document.getElementById('user-name').textContent = user.email;
                         }
                     })
-                    .catch(() => {
+                    .catch((error) => {
+                        console.error("Error fetching user data:", error);
                         document.getElementById('user-name').textContent = user.email;
+                    });
+
+                // Fetch progress data
+                db.collection('progress').doc(upperCaseEmail).get()
+                    .then((doc) => {
+                        setLoadingState(false);
+                        
+                        if (doc.exists) {
+                            const progressData = doc.data();
+                            
+                            // Update progress cards and bars
+                            const fields = {
+                                'pdf-preview': 'PDF Files Preview',
+                                'test-environment': 'Test Environment',
+                                'videos-review': 'Videos Review'
+                            };
+
+                            for (const [elementId, fieldName] of Object.entries(fields)) {
+                                const value = progressData[fieldName] || '0%';
+                                document.getElementById(elementId).textContent = value;
+                                updateProgressBar(`${elementId}-bar`, value.replace('%', ''));
+                            }
+
+                            // Calculate and update overall progress
+                            const overallProgress = calculateOverallProgress(progressData);
+                            document.getElementById('metrics-summary').innerHTML = `
+                                <p>Overall Progress: ${overallProgress.toFixed(1)}%</p>
+                            `;
+                            updateProgressBar('overall-progress-bar', overallProgress);
+                        } else {
+                            console.log("No progress data found for user");
+                            // Set default values
+                            const elements = ['pdf-preview', 'test-environment', 'videos-review'];
+                            elements.forEach(id => {
+                                document.getElementById(id).textContent = '0%';
+                                updateProgressBar(`${id}-bar`, 0);
+                            });
+                            document.getElementById('metrics-summary').innerHTML = `
+                                <p>Overall Progress: 0%</p>
+                            `;
+                            updateProgressBar('overall-progress-bar', 0);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching progress data:", error);
+                        setLoadingState(false);
+                        // Set error state in UI
+                        const elements = ['pdf-preview', 'test-environment', 'videos-review'];
+                        elements.forEach(id => {
+                            const element = document.getElementById(id);
+                            element.textContent = 'Error loading data';
+                            element.classList.add('error-text');
+                        });
+                        document.getElementById('metrics-summary').innerHTML = `
+                            <p class="error-text">Error calculating overall progress</p>
+                        `;
                     });
             } else {
                 window.location.href = 'login.html';
@@ -249,13 +381,11 @@
         document.getElementById('logout-btn').addEventListener('click', () => {
             firebase.auth().signOut()
                 .then(() => window.location.href = 'login.html')
-                .catch(() => alert('Error signing out. Please try again.'));
+                .catch((error) => {
+                    console.error("Error signing out:", error);
+                    alert('Error signing out. Please try again.');
+                });
         });
-
-        // Update dashboard
-        document.getElementById('tasks-completed').textContent = "5/10";
-        document.getElementById('current-status').textContent = "On Track";
-        document.getElementById('achievement-level').textContent = "Intermediate";
     </script>
 </body>
 </html>
