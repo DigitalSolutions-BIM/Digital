@@ -225,60 +225,63 @@
         </div>
     </div>
 
-   script>
-    // Helper function to parse percentage values
-    function parsePercentageValue(value) {
-        if (typeof value === 'string') {
-            // Remove the % symbol and parse as float
-            return parseFloat(value.replace('%', ''));
+    <script>
+        // Helper function to parse percentage values
+        function parsePercentageValue(value) {
+            if (typeof value === 'string') {
+                // Remove the % symbol and parse as float
+                return parseFloat(value.replace('%', ''));
+            }
+            return parseFloat(value) || 0;
         }
-        return parseFloat(value) || 0;
-    }
 
-    // Create progress card element
-    function createProgressCard(taskName, value) {
-        const card = document.createElement('div');
-        card.className = 'progress-card';
-        
-        const cardId = taskName.toLowerCase().replace(/\s+/g, '-');
-        const percentageValue = parsePercentageValue(value);
-        
-        card.innerHTML = `
-            <h3>${taskName}</h3>
-            <p id="${cardId}">${value}</p>
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="${cardId}-bar" style="width: ${percentageValue}%"></div>
-            </div>
-        `;
-        
-        return card;
-    }
-
-    // Update progress bar
-    function updateProgressBar(id, value) {
-        const bar = document.getElementById(id);
-        const percentage = parsePercentageValue(value);
-        if (!isNaN(percentage)) {
-            bar.style.width = `${percentage}%`;
+        // Create progress card element
+        function createProgressCard(taskName, value) {
+            const card = document.createElement('div');
+            card.className = 'progress-card';
+            
+            const cardId = taskName.toLowerCase().replace(/\s+/g, '-');
+            const percentageValue = parsePercentageValue(value);
+            
+            card.innerHTML = `
+                <h3>${taskName}</h3>
+                <p id="${cardId}">${value}</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="${cardId}-bar" style="width: ${percentageValue}%"></div>
+                </div>
+            `;
+            
+            return card;
         }
-    }
 
-    // Calculate overall progress
-    function calculateOverallProgress(progressData) {
-        const values = Object.values(progressData)
-            .map(value => parsePercentageValue(value))
-            .filter(value => !isNaN(value));
-        
-        if (values.length === 0) return 0;
-        return values.reduce((a, b) => a + b, 0) / values.length;
-    }
+        // Update progress bar
+        function updateProgressBar(id, value) {
+            const bar = document.getElementById(id);
+            const percentage = parsePercentageValue(value);
+            if (!isNaN(percentage)) {
+                bar.style.width = `${percentage}%`;
+            }
+        }
 
-    
+        // Calculate overall progress
+        function calculateOverallProgress(progressData) {
+            const values = Object.values(progressData)
+                .map(value => parsePercentageValue(value))
+                .filter(value => !isNaN(value));
+            
+            if (values.length === 0) return 0;
+            return values.reduce((a, b) => a + b, 0) / values.length;
+        }
+
         // Set loading state for progress cards container
         function setLoadingState(isLoading) {
             const container = document.getElementById('progress-cards');
             if (isLoading) {
-                container.innerHTML = '<div class="progress-card loading"><h3>Loading...</h3></div>';
+                container.innerHTML = `
+                    <div class="progress-card loading">
+                        <h3>Loading...</h3>
+                    </div>
+                `;
             } else {
                 container.innerHTML = '';
             }
