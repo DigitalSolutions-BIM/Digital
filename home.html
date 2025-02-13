@@ -256,73 +256,136 @@
         </div>
     </div>
 
-   <script>
-    // Add loading state to elements
-    function setLoadingState(isLoading) {
-        const progressContainer = document.querySelector(".progress-cards");
-        progressContainer.innerHTML = isLoading ? "<p>Loading progress...</p>" : "";
-    }
-
-    // Update progress bar
-    function updateProgressBar(id, value) {
-        const bar = document.getElementById(id);
-        const percentage = parseFloat(value);
-        if (!isNaN(percentage)) {
-            bar.style.width = `${percentage}%`;
-        }
-    }
-
-    // Fetch progress data from Firebase
-    function fetchProgressData(user) {
-        const db = firebase.firestore();
-        const upperCaseEmail = user.email.toUpperCase();
-        setLoadingState(true);
-
-        db.collection("progress").doc(upperCaseEmail).get()
-            .then((doc) => {
-                if (doc.exists) {
-                    const progressData = doc.data();
-                    displayProgress(progressData);
+    <script>
+        // Add loading state to elements
+        function setLoadingState(isLoading) {
+            const elements = ['pdf-preview', 'test-environment', 'videos-review'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (isLoading) {
+                    element.classList.add('loading');
+                    element.textContent = 'Loading...';
                 } else {
-                    console.log("No progress data found");
+                    element.classList.remove('loading');
                 }
-            })
-            .catch((error) => {
-                console.error("Error fetching progress data:", error);
             });
-    }
-
-    // Display progress dynamically
-    function displayProgress(progressData) {
-        const progressContainer = document.querySelector(".progress-cards");
-        progressContainer.innerHTML = "";
-
-        Object.keys(progressData).forEach((key) => {
-            const value = progressData[key];
-            const percentage = isNaN(value) ? 0 : value;
-            const progressCard = document.createElement("div");
-            progressCard.classList.add("progress-card");
-            progressCard.innerHTML = `
-                <h3>${key}</h3>
-                <p>${percentage}%</p>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: ${percentage}%"></div>
-                </div>
-            `;
-            progressContainer.appendChild(progressCard);
-        });
-    }
-
-    // Check authentication state and fetch progress
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            document.getElementById("user-name").textContent = user.email;
-            fetchProgressData(user);
-        } else {
-            window.location.href = "login.html"; // Redirect to login if not authenticated
         }
-    });
-</script>
 
+        // Update progress bar
+        function updateProgressBar(id, value) {
+            const bar = document.getElementById(id);
+            const percentage = parseFloat(value);
+            if (!isNaN(percentage)) {
+                bar.style.width = ${percentage}%;
+            }
+        }
+
+        // Calculate overall progress
+        function calculateOverallProgress(progressData) {
+            const values = [
+                parseFloat(progressData['PDF Files Preview'] || '0'),
+                parseFloat(progressData['Test Environment'] || '0'),
+                parseFloat(progressData['Videos Review'] || '0')
+            ];
+            
+            const validValues = values.filter(value => !isNaN(value));
+            if (validValues.length === 0) return 0;
+            
+            return validValues.reduce((a, b) => a + b, 0) / validValues.length;
+        }
+
+        // Check authentication state and update progress
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                const db = firebase.firestore();
+                const upperCaseEmail = user.email.toUpperCase();
+                
+                setLoadingState(true);
+
+                // Fetch user data
+                db.collection('users').doc(upperCaseEmail).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            document.getElementById('user-name').textContent = 
+                                ${doc.data().firstName} ${doc.data().lastName};
+                        } else {
+                            document.getElementById('user-name').textContent = user.email;
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching user data:", error);
+                        document.getElementById('user-name').textContent = user.email;
+                    });
+
+                // Fetch progress data
+                db.collection('progress').doc(upperCaseEmail).get()
+                    .then((doc) => {
+                        setLoadingState(false);
+                        
+                        if (doc.exists) {
+                            const progressData = doc.data();
+                            
+                            // Update progress cards and bars
+                            const fields = {
+                                'pdf-preview': 'PDF Files Preview',
+                                'test-environment': 'Test Environment',
+                                'videos-review': 'Videos Review'
+                            };
+
+                            for (const [elementId, fieldName] of Object.entries(fields)) {
+                                const value = progressData[fieldName] || '0%';
+                                document.getElementById(elementId).textContent = value;
+                                updateProgressBar(${elementId}-bar, value.replace('%', ''));
+                            }
+
+                            // Calculate and update overall progress
+                            const overallProgress = calculateOverallProgress(progressData);
+                            document.getElementById('metrics-summary').innerHTML = 
+                                <p>Overall Progress: ${overallProgress.toFixed(1)}%</p>
+                            ;
+                            updateProgressBar('overall-progress-bar', overallProgress);
+                        } else {
+                            console.log("No progress data found for user");
+                            // Set default values
+                            const elements = ['pdf-preview', 'test-environment', 'videos-review'];
+                            elements.forEach(id => {
+                                document.getElementById(id).textContent = '0%';
+                                updateProgressBar(${id}-bar, 0);
+                            });
+                            document.getElementById('metrics-summary').innerHTML = 
+                                <p>Overall Progress: 0%</p>
+                            ;
+                            updateProgressBar('overall-progress-bar', 0);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching progress data:", error);
+                        setLoadingState(false);
+                        // Set error state in UI
+                        const elements = ['pdf-preview', 'test-environment', 'videos-review'];
+                        elements.forEach(id => {
+                            const element = document.getElementById(id);
+                            element.textContent = 'Error loading data';
+                            element.classList.add('error-text');
+                        });
+                        document.getElementById('metrics-summary').innerHTML = 
+                            <p class="error-text">Error calculating overall progress</p>
+                        ;
+                    });
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Handle sign out
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            firebase.auth().signOut()
+                .then(() => window.location.href = 'login.html')
+                .catch((error) => {
+                    console.error("Error signing out:", error);
+                    alert('Error signing out. Please try again.');
+                });
+        });
+    </script>
 </body>
 </html>
