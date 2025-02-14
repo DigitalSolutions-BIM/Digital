@@ -20,6 +20,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            position: relative; /* Ensure body is a positioning context */
         }
 
         .logo {
@@ -28,6 +29,7 @@
             left: 10px;
             width: 150px; /* Adjust the width as needed */
             height: auto; /* Maintain aspect ratio */
+            z-index: 1001; /* Ensure logo is above the container */
         }
 
         .auth-container {
@@ -38,6 +40,8 @@
             width: 100%;
             max-width: 400px;
             text-align: center;
+            position: relative; /* Ensure container is positioned */
+            z-index: 1000; /* Lower z-index than logo */
         }
 
         h1 {
@@ -118,7 +122,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
             text-align: center;
-            z-index: 1000;
+            z-index: 1002; /* Above logo and container */
             display: none;
         }
 
@@ -129,7 +133,7 @@
             right: 0;
             bottom: 0;
             background: rgba(0,0,0,0.5);
-            z-index: 999;
+            z-index: 1001; /* Above container but below popup */
             display: none;
         }
 
