@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log In</title>
     <link rel="stylesheet" href="style.css">
     <!-- Firebase Dependencies -->
@@ -20,7 +21,7 @@
             margin: 0;
         }
 
-         .logo {
+        .logo {
             position: absolute;
             top: 5px;
             left: 10px;
@@ -28,9 +29,8 @@
             height: auto; /* Maintain aspect ratio */
         }
 
-
         .auth-container {
-    background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.05);
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -105,10 +105,42 @@
         .auth-link a:hover {
             text-decoration: underline;
         }
+
+        /* Media Queries for Mobile Responsiveness */
+        @media (max-width: 600px) {
+            .logo {
+                width: 100px; /* Smaller logo for mobile */
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .auth-container {
+                padding: 1rem;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            input {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            button {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .auth-link {
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
-        <img src="https://i.ibb.co/n8nJd0Xf/Green-Modern-Ramadan-Mubarak-Free-Instagram-Post-1.png" alt="Logo" class="logo">
+    <img src="https://i.ibb.co/n8nJd0Xf/Green-Modern-Ramadan-Mubarak-Free-Instagram-Post-1.png" alt="Logo" class="logo">
 
     <div class="auth-container">
         <h1>Log In</h1>
