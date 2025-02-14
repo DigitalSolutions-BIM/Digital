@@ -154,24 +154,28 @@
                 window.location.href = 'home.html';
             } catch (error) {
                 let errorMessage = 'Error In Log In';
-                switch (error.code) {
-                    case 'auth/invalid-email':
-                        errorMessage = 'Email Not Valid';
-                        break;
-                    case 'auth/user-disabled':
-                        errorMessage = 'Blocked Account';
-                        break;
-                    case 'auth/user-not-found':
-                        errorMessage = 'Email Not Found';
-                        break;
-                    case 'auth/wrong-password':
-                        errorMessage = 'Password Incorrect';
-                        break;
-                    case 'auth/too-many-requests':
-                        errorMessage = 'Too many failed attempts. Please try again later.';
-                        break;
-                    default:
-                        errorMessage = error.message || 'An unexpected error occurred. Please try again.';
+                
+                // Handle the specific INVALID_LOGIN_CREDENTIALS error
+                if (error.code === 'auth/invalid-email' || 
+                    error.code === 'auth/wrong-password' || 
+                    error.code === 'auth/user-not-found' ||
+                    error.message === 'INVALID_LOGIN_CREDENTIALS') {
+                    errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+                } else {
+                    // Handle other specific error cases
+                    switch (error.code) {
+                        case 'auth/user-disabled':
+                            errorMessage = 'This account has been disabled. Please contact support.';
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMessage = 'Too many failed attempts. Please try again later or reset your password.';
+                            break;
+                        case 'auth/network-request-failed':
+                            errorMessage = 'Network error. Please check your internet connection and try again.';
+                            break;
+                        default:
+                            errorMessage = 'An error occurred during login. Please try again later.';
+                    }
                 }
                 errorElement.textContent = errorMessage;
             } finally {
