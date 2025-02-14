@@ -10,7 +10,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="firebase-config.js"></script>
     <style>
-        /* Basic styles for the login page */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -124,14 +123,14 @@
     </div>
 
     <script>
-        // Check authentication state
+        // Initialize Firebase (make sure firebase-config.js is properly set up)
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 window.location.href = 'home.html';
             }
         });
 
-        // Handle login form submission
+        // Handle form submission
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             toggleLoading(true);
@@ -140,51 +139,69 @@
             const password = document.getElementById('password').value.trim();
             const errorElement = document.getElementById('error-message');
             
-            // Clear previous messages
+            // Clear any existing error messages
             errorElement.textContent = '';
 
             try {
-                // Validate email and password
+                // Form validation
                 if (!email || !password) {
                     throw new Error('Please fill in all fields.');
                 }
 
-                // Attempt to log in
-                await firebase.auth().signInWithEmailAndPassword(email, password);
-                window.location.href = 'home.html';
+                // Attempt login
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                if (userCredential.user) {
+                    window.location.href = 'home.html';
+                }
             } catch (error) {
-                let errorMessage = 'Error In Log In';
-                
-                // Handle the specific INVALID_LOGIN_CREDENTIALS error
-                if (error.code === 'auth/invalid-email' || 
+                console.error('Login error:', error);
+
+                // Handle different types of errors
+                if (
+                    error.code === 'auth/invalid-credential' || 
+                    error.code === 'auth/invalid-email' || 
                     error.code === 'auth/wrong-password' || 
                     error.code === 'auth/user-not-found' ||
-                    error.message === 'INVALID_LOGIN_CREDENTIALS') {
-                    errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+                    error.message.includes('INVALID_LOGIN_CREDENTIALS')
+                ) {
+                    errorElement.textContent = 'Incorrect email or password. Please try again.';
                 } else {
                     // Handle other specific error cases
                     switch (error.code) {
                         case 'auth/user-disabled':
-                            errorMessage = 'This account has been disabled. Please contact support.';
+                            errorElement.textContent = 'This account has been disabled. Please contact support.';
                             break;
                         case 'auth/too-many-requests':
-                            errorMessage = 'Too many failed attempts. Please try again later or reset your password.';
+                            errorElement.textContent = 'Too many failed attempts. Please try again later or reset your password.';
                             break;
                         case 'auth/network-request-failed':
-                            errorMessage = 'Network error. Please check your internet connection and try again.';
+                            errorElement.textContent = 'Network error. Please check your internet connection.';
+                            break;
+                        case 'auth/operation-not-allowed':
+                            errorElement.textContent = 'Email/password sign-in is not enabled. Please contact support.';
                             break;
                         default:
-                            errorMessage = 'An error occurred during login. Please try again later.';
+                            errorElement.textContent = 'Something went wrong. Please try again.';
+                            // Log detailed error for debugging
+                            console.error('Detailed error:', {
+                                code: error.code,
+                                message: error.message,
+                                fullError: error
+                            });
                     }
                 }
-                errorElement.textContent = errorMessage;
             } finally {
                 toggleLoading(false);
             }
         });
 
+        // Toggle loading state
         function toggleLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            const loadingElement = document.getElementById('loading');
+            const submitButton = document.getElementById('submit-btn');
+            
+            loadingElement.style.display = show ? 'block' : 'none';
+            submitButton.disabled = show;
         }
     </script>
 </body>
