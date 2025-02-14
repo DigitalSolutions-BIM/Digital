@@ -33,9 +33,16 @@
             margin-bottom: 2rem;
         }
 
+        .logo {
+            height: 50px; /* Adjust the height as needed */
+            width: auto; /* Maintain aspect ratio */
+            margin-right: 20px; /* Add some space between the logo and the welcome text */
+        }
+
         .welcome-container {
             display: flex;
             flex-direction: column;
+            flex-grow: 1; /* Allow the welcome container to take up remaining space */
         }
 
         .welcome-text {
@@ -220,13 +227,7 @@
             background-color: #6c757d;
             color: white;
         }
- .logo {
-            position: absolute;
-            top: 5px;
-            left: 10px;
-            width: 150px; /* Adjust the width as needed */
-            height: auto; /* Maintain aspect ratio */
-        }
+
         .update-history {
             margin-top: 10px;
             font-size: 0.9em;
@@ -251,6 +252,11 @@
                 gap: 1rem;
             }
 
+            .logo {
+                margin-right: 0;
+                margin-bottom: 10px; /* Add space below the logo on small screens */
+            }
+
             .logout-btn {
                 margin-left: 0;
                 width: 100%;
@@ -263,10 +269,9 @@
     </style>
 </head>
 <body>
-        <img src="https://i.ibb.co/n8nJd0Xf/Green-Modern-Ramadan-Mubarak-Free-Instagram-Post-1.png" alt="Logo" class="logo">
-
     <div class="fullscreen-container">
         <header class="header">
+            <img src="https://i.ibb.co/n8nJd0Xf/Green-Modern-Ramadan-Mubarak-Free-Instagram-Post-1.png" alt="Logo" class="logo">
             <div class="welcome-container">
                 <h1 class="welcome-text">Welcome</h1>
                 <span class="user-name" id="user-name">Loading...</span>
