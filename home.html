@@ -173,6 +173,67 @@
             font-style: italic;
         }
 
+        /* New styles for update functionality */
+        .update-btn {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #4da6ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .update-btn:hover {
+            background-color: #3d8bdb;
+        }
+
+        .update-form {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .update-form input {
+            flex: 1;
+            padding: 5px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .save-btn, .cancel-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .save-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .update-history {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #a0a0a0;
+        }
+
+        .update-entry {
+            background: #2d2d2d;
+            padding: 5px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
         @media screen and (max-width: 768px) {
             .section-container {
                 padding: 1rem;
@@ -229,28 +290,28 @@
         // Helper function to parse percentage values
         function parsePercentageValue(value) {
             if (typeof value === 'string') {
-                // Remove the % symbol and parse as float
                 return parseFloat(value.replace('%', ''));
             }
             return parseFloat(value) || 0;
         }
 
-        // Create progress card element
+        // Create progress card element with update functionality
         function createProgressCard(taskName, value) {
             const card = document.createElement('div');
             card.className = 'progress-card';
-            
             const cardId = taskName.toLowerCase().replace(/\s+/g, '-');
             const percentageValue = parsePercentageValue(value);
-            
+
             card.innerHTML = `
                 <h3>${taskName}</h3>
                 <p id="${cardId}">${value}</p>
                 <div class="progress-bar-container">
                     <div class="progress-bar" id="${cardId}-bar" style="width: ${percentageValue}%"></div>
                 </div>
+                <button class="update-btn">Update</button>
+                <div class="update-history"></div>
             `;
-            
+
             return card;
         }
 
@@ -268,7 +329,7 @@
             const values = Object.values(progressData)
                 .map(value => parsePercentageValue(value))
                 .filter(value => !isNaN(value));
-            
+
             if (values.length === 0) return 0;
             return values.reduce((a, b) => a + b, 0) / values.length;
         }
@@ -287,24 +348,89 @@
             }
         }
 
+        // Add event delegation for update buttons
+        document.getElementById('progress-cards').addEventListener('click', function(e) {
+            const updateBtn = e.target.closest('.update-btn');
+            if (updateBtn) {
+                const card = updateBtn.closest('.progress-card');
+                showUpdateForm(card);
+            }
+        });
+
+        function showUpdateForm(card) {
+            const updateBtn = card.querySelector('.update-btn');
+            const updateHistory = card.querySelector('.update-history');
+            
+            const formHtml = `
+                <div class="update-form">
+                    <input type="text" placeholder="Enter new value" required>
+                    <button class="save-btn" type="button">Save</button>
+                    <button class="cancel-btn" type="button">Cancel</button>
+                </div>
+            `;
+            
+            updateBtn.insertAdjacentHTML('afterend', formHtml);
+            updateBtn.style.display = 'none';
+            
+            const form = card.querySelector('.update-form');
+            const input = form.querySelector('input');
+            const saveBtn = form.querySelector('.save-btn');
+            const cancelBtn = form.querySelector('.cancel-btn');
+            
+            saveBtn.addEventListener('click', async () => {
+                if (!input.value.trim()) return;
+                await saveUpdate(card, input.value.trim());
+                form.remove();
+                updateBtn.style.display = 'block';
+            });
+            
+            cancelBtn.addEventListener('click', () => {
+                form.remove();
+                updateBtn.style.display = 'block';
+            });
+        }
+
+        async function saveUpdate(card, newValue) {
+            const user = firebase.auth().currentUser;
+            if (!user) return;
+
+            const db = firebase.firestore();
+            const docRef = db.collection('progress').doc(user.email.toUpperCase());
+            const taskName = card.querySelector('h3').textContent;
+            const fieldName = `${taskName}_Update`;
+
+            try {
+                await docRef.update({
+                    [fieldName]: newValue
+                });
+                
+                // Add update to history
+                const updateEntry = document.createElement('div');
+                updateEntry.className = 'update-entry';
+                updateEntry.textContent = `Pending approval: ${newValue}`;
+                card.querySelector('.update-history').prepend(updateEntry);
+            } catch (error) {
+                console.error("Update error:", error);
+                alert('Error saving update. Please try again.');
+            }
+        }
+
         // Check authentication state and update progress
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 const db = firebase.firestore();
                 const upperCaseEmail = user.email.toUpperCase();
-                
+
                 setLoadingState(true);
 
                 // Fetch user data
-               db.collection('users').doc(upperCaseEmail).get()
-    .then((doc) => {
-        if (doc.exists) {
-                            // Get the firstName and lastName, handle potential case variations
-                             const firstName = doc.data().firstName || doc.data().firstname || doc.data().FIRSTNAME;
-            const lastName = doc.data().lastName || doc.data().lastname || doc.data().LASTNAME;
-                            
+                db.collection('users').doc(upperCaseEmail).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const firstName = doc.data().firstName || doc.data().firstname || doc.data().FIRSTNAME;
+                            const lastName = doc.data().lastName || doc.data().lastname || doc.data().LASTNAME;
+
                             if (firstName && lastName) {
-                                // Properly capitalize names for display
                                 const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
                                 const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
                                 document.getElementById('user-name').textContent = `${formattedFirstName} ${formattedLastName}`;
@@ -315,27 +441,38 @@
                             document.getElementById('user-name').textContent = 'Please update your profile';
                         }
                     })
-                 .catch((error) => {
-        console.error("Error fetching user data:", error);
-        document.getElementById('user-name').textContent = 'Error loading profile';
-    });
+                    .catch((error) => {
+                        console.error("Error fetching user data:", error);
+                        document.getElementById('user-name').textContent = 'Error loading profile';
+                    });
 
                 // Fetch progress data
                 db.collection('progress').doc(upperCaseEmail).get()
                     .then((doc) => {
                         setLoadingState(false);
                         const progressCardsContainer = document.getElementById('progress-cards');
-                        
+
                         if (doc.exists) {
                             const progressData = doc.data();
-                            
-                            // Create cards for each task
-                            Object.entries(progressData).forEach(([taskName, value]) => {
+                            const mainTasks = Object.keys(progressData)
+                                .filter(key => !key.endsWith('_Update'));
+
+                            mainTasks.forEach(taskName => {
+                                const value = progressData[taskName];
                                 const card = createProgressCard(taskName, value);
                                 progressCardsContainer.appendChild(card);
+
+                                // Add existing updates
+                                const updateField = `${taskName}_Update`;
+                                if (progressData[updateField]) {
+                                    const updateEntry = document.createElement('div');
+                                    updateEntry.className = 'update-entry';
+                                    updateEntry.textContent = `Pending approval: ${progressData[updateField]}`;
+                                    card.querySelector('.update-history').appendChild(updateEntry);
+                                }
                             });
 
-                            // Calculate and update overall progress
+                            // Calculate overall progress
                             const overallProgress = calculateOverallProgress(progressData);
                             document.getElementById('metrics-summary').innerHTML = `
                                 <p>Overall Progress: ${overallProgress.toFixed(1)}%</p>
