@@ -225,11 +225,10 @@
         </div>
     </div>
 
-    <script>
+     <script>
         // Helper function to parse percentage values
         function parsePercentageValue(value) {
             if (typeof value === 'string') {
-                // Remove the % symbol and parse as float
                 return parseFloat(value.replace('%', ''));
             }
             return parseFloat(value) || 0;
@@ -291,20 +290,18 @@
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 const db = firebase.firestore();
-                const upperCaseEmail = user.email.toUpperCase();
+                const exactEmail = user.email; // Use original email casing
                 
                 setLoadingState(true);
 
                 // Fetch user data
-                db.collection('users').doc(upperCaseEmail).get()
+                db.collection('users').doc(exactEmail).get()
                     .then((doc) => {
                         if (doc.exists) {
-                            // Get the firstName and lastName, handle potential case variations
                             const firstName = doc.data().firstName || doc.data().firstname || doc.data().FIRSTNAME;
                             const lastName = doc.data().lastName || doc.data().lastname || doc.data().LASTNAME;
                             
                             if (firstName && lastName) {
-                                // Properly capitalize names for display
                                 const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
                                 const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
                                 document.getElementById('user-name').textContent = `${formattedFirstName} ${formattedLastName}`;
@@ -321,7 +318,7 @@
                     });
 
                 // Fetch progress data
-                db.collection('progress').doc(upperCaseEmail).get()
+                db.collection('progress').doc(exactEmail).get()
                     .then((doc) => {
                         setLoadingState(false);
                         const progressCardsContainer = document.getElementById('progress-cards');
@@ -329,13 +326,11 @@
                         if (doc.exists) {
                             const progressData = doc.data();
                             
-                            // Create cards for each task
                             Object.entries(progressData).forEach(([taskName, value]) => {
                                 const card = createProgressCard(taskName, value);
                                 progressCardsContainer.appendChild(card);
                             });
 
-                            // Calculate and update overall progress
                             const overallProgress = calculateOverallProgress(progressData);
                             document.getElementById('metrics-summary').innerHTML = `
                                 <p>Overall Progress: ${overallProgress.toFixed(1)}%</p>
