@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Added for mobile responsiveness -->
     <title>Sign Up</title>
     <link rel="stylesheet" href="style.css">
     
@@ -11,7 +12,102 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="firebase-config.js"></script>
     <style>
-        /* Add these styles to your CSS */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .logo {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            width: 150px; /* Adjust the width as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+            color: #f4f4f4;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #f4f4f4;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #4da6ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3d8bdb;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .auth-link {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #f4f4f4;
+        }
+
+        .auth-link a {
+            color: #4da6ff;
+            text-decoration: none;
+        }
+
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Success Popup Styles */
         .success-popup {
             position: fixed;
             top: 50%;
@@ -25,14 +121,7 @@
             z-index: 1000;
             display: none;
         }
-         .logo {
-            position: absolute;
-            top: 5px;
-            left: 10px;
-            width: 150px; /* Adjust the width as needed */
-            height: auto; /* Maintain aspect ratio */
-        }
-        
+
         .overlay {
             position: fixed;
             top: 0;
@@ -43,10 +132,55 @@
             z-index: 999;
             display: none;
         }
+
+        /* Media Queries for Mobile Responsiveness */
+        @media (max-width: 600px) {
+            .logo {
+                width: 100px; /* Smaller logo for mobile */
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .auth-container {
+                padding: 1rem;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            input {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            button {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .auth-link {
+                font-size: 0.8rem;
+            }
+
+            .success-popup {
+                padding: 1rem;
+                width: 80%;
+            }
+
+            .success-popup h2 {
+                font-size: 1.2rem;
+            }
+
+            .success-popup p {
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
-        <img src="https://i.ibb.co/n8nJd0Xf/Green-Modern-Ramadan-Mubarak-Free-Instagram-Post-1.png" alt="Logo" class="logo">
+    <img src="https://i.ibb.co/n8nJd0Xf/Green-Modern-Ramadan-Mubarak-Free-Instagram-Post-1.png" alt="Logo" class="logo">
 
     <div class="auth-container">
         <h1>Create New Account</h1>
@@ -84,11 +218,12 @@
             <button type="submit" id="submit-btn">Sign Up</button>
             <div id="error-message" class="error-message"></div>
             <div id="loading" class="loading" style="display: none;">
-Creating Account Inprogress....            </div>
+                Creating Account Inprogress....
+            </div>
         </form>
         
         <p class="auth-link">
-            You Have Account?<a href="login.html">Log in Here</a>
+            You Have Account? <a href="login.html">Log in Here</a>
         </p>
     </div>
 
@@ -99,110 +234,110 @@ Creating Account Inprogress....            </div>
         <p>Redirecting to login page in <span id="countdown">5</span> seconds...</p>
     </div>
 
-<script>
-    // Ensure Firebase is initialized properly
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-
-    document.getElementById('signup-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const errorElement = document.getElementById('error-message');
-        errorElement.textContent = '';
-
-        // Get form values
-        const firstName = document.getElementById('firstName').value.trim();
-        const lastName = document.getElementById('lastName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const confirmEmail = document.getElementById('confirm-email').value.trim();
-        const password = document.getElementById('password').value.trim();
-        const confirmPassword = document.getElementById('confirm-password').value.trim();
-
-        // Validate emails and passwords match
-        if (email !== confirmEmail) {
-            errorElement.textContent = 'Emails do not match';
-            return;
-        }
-        if (password !== confirmPassword) {
-            errorElement.textContent = 'Passwords do not match';
-            return;
+    <script>
+        // Ensure Firebase is initialized properly
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
 
-        toggleLoading(true);
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = '';
 
-        try {
-            // Create user in Authentication
-            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-            const user = userCredential.user;
-            console.log("User created successfully:", user.uid);
+            // Get form values
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const confirmEmail = document.getElementById('confirm-email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirm-password').value.trim();
 
-            // Create document ID from uppercase email
-            const docId = email.toUpperCase();
-
-            // Save additional data to Firestore
-            await firebase.firestore().collection('users').doc(docId).set({
-                uid: user.uid,
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            console.log("User data saved to Firestore successfully!");
-            
-            // Show success popup
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('success-popup').style.display = 'block';
-            startCountdown();
-
-        } catch (error) {
-            console.error("Error during signup:", error);
-            let errorMessage = 'Error creating account. Please contact administrator.';
-
-            switch (error.code) {
-                case 'auth/email-already-in-use':
-                    errorMessage = 'Email already exists';
-                    break;
-                case 'auth/invalid-email':
-                    errorMessage = 'Invalid email format';
-                    break;
-                case 'auth/weak-password':
-                    errorMessage = 'Password must be at least 6 characters';
-                    break;
-                case 'auth/operation-not-allowed':
-                    errorMessage = 'Unauthorized operation. Contact administrator.';
-                    break;
-                case 'permission-denied':
-                    errorMessage = 'Database permission denied. Contact administrator.';
-                    break;
-                default:
-                    errorMessage = error.message;
-                    break;
+            // Validate emails and passwords match
+            if (email !== confirmEmail) {
+                errorElement.textContent = 'Emails do not match';
+                return;
             }
-            errorElement.textContent = errorMessage;
-        } finally {
-            toggleLoading(false);
-        }
-    });
-
-    function toggleLoading(show) {
-        document.getElementById('loading').style.display = show ? 'block' : 'none';
-        document.getElementById('submit-btn').disabled = show;
-    }
-
-    function startCountdown() {
-        let seconds = 5;
-        const countdownElement = document.getElementById('countdown');
-        const countdownInterval = setInterval(() => {
-            seconds--;
-            countdownElement.textContent = seconds;
-            
-            if (seconds <= 0) {
-                clearInterval(countdownInterval);
-                window.location.href = 'login.html';
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Passwords do not match';
+                return;
             }
-        }, 500);
-    }
-</script>
+
+            toggleLoading(true);
+
+            try {
+                // Create user in Authentication
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                console.log("User created successfully:", user.uid);
+
+                // Create document ID from uppercase email
+                const docId = email.toUpperCase();
+
+                // Save additional data to Firestore
+                await firebase.firestore().collection('users').doc(docId).set({
+                    uid: user.uid,
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                console.log("User data saved to Firestore successfully!");
+                
+                // Show success popup
+                document.getElementById('overlay').style.display = 'block';
+                document.getElementById('success-popup').style.display = 'block';
+                startCountdown();
+
+            } catch (error) {
+                console.error("Error during signup:", error);
+                let errorMessage = 'Error creating account. Please contact administrator.';
+
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'Email already exists';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email format';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'Password must be at least 6 characters';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        errorMessage = 'Unauthorized operation. Contact administrator.';
+                        break;
+                    case 'permission-denied':
+                        errorMessage = 'Database permission denied. Contact administrator.';
+                        break;
+                    default:
+                        errorMessage = error.message;
+                        break;
+                }
+                errorElement.textContent = errorMessage;
+            } finally {
+                toggleLoading(false);
+            }
+        });
+
+        function toggleLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('submit-btn').disabled = show;
+        }
+
+        function startCountdown() {
+            let seconds = 5;
+            const countdownElement = document.getElementById('countdown');
+            const countdownInterval = setInterval(() => {
+                seconds--;
+                countdownElement.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = 'login.html';
+                }
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
