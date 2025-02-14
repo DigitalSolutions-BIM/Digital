@@ -3,128 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <title>Log In</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase Dependencies -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        /* Basic styles for the login page */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            /* Keeping background color as default */
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            height: 100vh;
+            margin: 0;
         }
 
         .auth-container {
-            /* Using default white background */
+            background: #fff;
             padding: 2rem;
             border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
+            text-align: center;
         }
 
         h1 {
-            text-align: center;
-            color: inherit;
             margin-bottom: 1.5rem;
+            color: #333;
         }
 
         .form-group {
             margin-bottom: 1rem;
+            text-align: left;
         }
 
         label {
             display: block;
             margin-bottom: 0.5rem;
+            color: #555;
         }
 
         input {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #ddd;
+            border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 1rem;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #ddd;
         }
 
         button {
             width: 100%;
             padding: 0.75rem;
-            /* Using default button styles */
-            border: 1px solid #ddd;
+            background-color: #4da6ff;
+            color: white;
+            border: none;
             border-radius: 4px;
             font-size: 1rem;
             cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3d8bdb;
         }
 
         .error-message {
+            color: #dc3545;
             margin-top: 1rem;
-            padding: 0.75rem;
-            color: red;
             font-size: 0.9rem;
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .error-message.visible {
-            display: block;
         }
 
         .loading {
-            text-align: center;
             margin-top: 1rem;
-            display: none;
-        }
-
-        .loading::after {
-            content: '';
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid #666;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-            margin-left: 0.5rem;
-            vertical-align: middle;
+            font-size: 0.9rem;
+            color: #555;
         }
 
         .auth-link {
-            text-align: center;
             margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #555;
         }
 
         .auth-link a {
+            color: #4da6ff;
             text-decoration: none;
         }
 
         .auth-link a:hover {
             text-decoration: underline;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
     </style>
-    <!-- Firebase Dependencies -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="firebase-config.js"></script>
 </head>
 <body>
     <div class="auth-container">
@@ -140,7 +113,7 @@
             </div>
             <button type="submit" id="submit-btn">Log In</button>
             <div id="error-message" class="error-message"></div>
-            <div id="loading" class="loading">In Progress Login ....</div>
+            <div id="loading" class="loading" style="display: none;">In Progress Login ....</div>
         </form>
         <p class="auth-link">
             Don't Have Account? <a href="signup.html">Create New Account</a>
@@ -167,16 +140,20 @@
             const password = document.getElementById('password').value.trim();
             const errorElement = document.getElementById('error-message');
             
-            // Clear previous messages and remove visible class
+            // Clear previous messages
             errorElement.textContent = '';
-            errorElement.classList.remove('visible');
 
             try {
+                // Validate email and password
+                if (!email || !password) {
+                    throw new Error('Please fill in all fields.');
+                }
+
+                // Attempt to log in
                 await firebase.auth().signInWithEmailAndPassword(email, password);
                 window.location.href = 'home.html';
             } catch (error) {
                 let errorMessage = 'Error In Log In';
-                
                 switch (error.code) {
                     case 'auth/invalid-email':
                         errorMessage = 'Email Not Valid';
@@ -190,12 +167,13 @@
                     case 'auth/wrong-password':
                         errorMessage = 'Password Incorrect';
                         break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Too many failed attempts. Please try again later.';
+                        break;
                     default:
-                        errorMessage = 'An unexpected error occurred. Please try again.';
+                        errorMessage = error.message || 'An unexpected error occurred. Please try again.';
                 }
-                
                 errorElement.textContent = errorMessage;
-                errorElement.classList.add('visible');
             } finally {
                 toggleLoading(false);
             }
@@ -203,7 +181,6 @@
 
         function toggleLoading(show) {
             document.getElementById('loading').style.display = show ? 'block' : 'none';
-            document.getElementById('submit-btn').disabled = show;
         }
     </script>
 </body>
