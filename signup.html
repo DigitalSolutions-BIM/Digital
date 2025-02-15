@@ -203,8 +203,8 @@
                 <input type="text" id="lastName" required autocomplete="family-name">
             </div>
             <div class="form-group">
-                <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" required autocomplete="tel">
+                <label for="Phone">Phone Number</label>
+                <input type="tel" id="Phone" required autocomplete="tel">
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
@@ -263,7 +263,7 @@
             const confirmEmail = document.getElementById('confirm-email').value.trim();
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirm-password').value.trim();
-            const phone = document.getElementById('phone').value.trim();
+            const Phone = document.getElementById('Phone').value.trim();
 
             // Validate emails and passwords match
             if (email !== confirmEmail) {
@@ -292,7 +292,7 @@
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
-                    phone: phone,
+                    Phone: Phone,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
