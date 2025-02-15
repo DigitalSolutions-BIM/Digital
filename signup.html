@@ -295,7 +295,6 @@
 
         // Create a new document in the 'progress' collection
         await firebase.firestore().collection('progress').doc(docId).set({
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             // Add any other fields you want to include in the progress document
         });
 
