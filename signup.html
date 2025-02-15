@@ -200,7 +200,10 @@
                 <label for="lastName">Last Name</label>
                 <input type="text" id="lastName" required autocomplete="family-name">
             </div>
-            
+            <div class="form-group">
+    <label for="phone">Phone Number</label>
+    <input type="tel" id="phone" required autocomplete="tel">
+</div>
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" required autocomplete="email" onpaste="return false;" oncopy="return false;">
@@ -246,85 +249,87 @@
             firebase.initializeApp(firebaseConfig);
         }
 
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const errorElement = document.getElementById('error-message');
-            errorElement.textContent = '';
+       document.getElementById('signup-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorElement = document.getElementById('error-message');
+    errorElement.textContent = '';
 
-            // Get form values
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const confirmEmail = document.getElementById('confirm-email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const confirmPassword = document.getElementById('confirm-password').value.trim();
+    // Get form values
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const confirmEmail = document.getElementById('confirm-email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const confirmPassword = document.getElementById('confirm-password').value.trim();
+    const phone = document.getElementById('phone').value.trim(); // Get phone number
 
-            // Validate emails and passwords match
-            if (email !== confirmEmail) {
-                errorElement.textContent = 'Emails do not match';
-                return;
-            }
-            if (password !== confirmPassword) {
-                errorElement.textContent = 'Passwords do not match';
-                return;
-            }
+    // Validate emails and passwords match
+    if (email !== confirmEmail) {
+        errorElement.textContent = 'Emails do not match';
+        return;
+    }
+    if (password !== confirmPassword) {
+        errorElement.textContent = 'Passwords do not match';
+        return;
+    }
 
-            toggleLoading(true);
+    toggleLoading(true);
 
-            try {
-                // Create user in Authentication
-                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                console.log("User created successfully:", user.uid);
+    try {
+        // Create user in Authentication
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        console.log("User created successfully:", user.uid);
 
-                // Create document ID from uppercase email
-                const docId = email.toUpperCase();
+        // Create document ID from uppercase email
+        const docId = email.toUpperCase();
 
-                // Save additional data to Firestore
-                await firebase.firestore().collection('users').doc(docId).set({
-                    uid: user.uid,
-                    firstName: firstName,
-                    lastName: lastName,
-                    email: email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                console.log("User data saved to Firestore successfully!");
-                
-                // Show success popup
-                document.getElementById('overlay').style.display = 'block';
-                document.getElementById('success-popup').style.display = 'block';
-                startCountdown();
-
-            } catch (error) {
-                console.error("Error during signup:", error);
-                let errorMessage = 'Error creating account. Please contact administrator.';
-
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'Email already exists';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Invalid email format';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Password must be at least 6 characters';
-                        break;
-                    case 'auth/operation-not-allowed':
-                        errorMessage = 'Unauthorized operation. Contact administrator.';
-                        break;
-                    case 'permission-denied':
-                        errorMessage = 'Database permission denied. Contact administrator.';
-                        break;
-                    default:
-                        errorMessage = error.message;
-                        break;
-                }
-                errorElement.textContent = errorMessage;
-            } finally {
-                toggleLoading(false);
-            }
+        // Save additional data to Firestore
+        await firebase.firestore().collection('users').doc(docId).set({
+            uid: user.uid,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phone: phone, // Save phone number
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+
+        console.log("User data saved to Firestore successfully!");
+        
+        // Show success popup
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('success-popup').style.display = 'block';
+        startCountdown();
+
+    } catch (error) {
+        console.error("Error during signup:", error);
+        let errorMessage = 'Error creating account. Please contact administrator.';
+
+        switch (error.code) {
+            case 'auth/email-already-in-use':
+                errorMessage = 'Email already exists';
+                break;
+            case 'auth/invalid-email':
+                errorMessage = 'Invalid email format';
+                break;
+            case 'auth/weak-password':
+                errorMessage = 'Password must be at least 6 characters';
+                break;
+            case 'auth/operation-not-allowed':
+                errorMessage = 'Unauthorized operation. Contact administrator.';
+                break;
+            case 'permission-denied':
+                errorMessage = 'Database permission denied. Contact administrator.';
+                break;
+            default:
+                errorMessage = error.message;
+                break;
+        }
+        errorElement.textContent = errorMessage;
+    } finally {
+        toggleLoading(false);
+    }
+});
 
         function toggleLoading(show) {
             document.getElementById('loading').style.display = show ? 'block' : 'none';
