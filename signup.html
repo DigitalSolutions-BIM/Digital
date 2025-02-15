@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://i.ibb.co; connect-src 'self' https://www.googleapis.com;">
     <title>Sign Up</title>
     <link rel="stylesheet" href="style.css">
     
@@ -21,16 +20,17 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            position: relative; /* Ensure body is a positioning context */
+            position: relative;
         }
 
         .logo {
             position: absolute;
-            top: 20px; /* Added margin between logo and container */
-            left: 20px; /* Position in the upper left corner for PC */
-            width: 150px; /* Adjust the width as needed */
-            height: auto; /* Maintain aspect ratio */
-            z-index: 1001; /* Ensure logo is above the container */
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: auto;
+            z-index: 1001;
         }
 
         .auth-container {
@@ -41,14 +41,14 @@
             width: 100%;
             max-width: 400px;
             text-align: center;
-            position: relative; /* Ensure container is positioned */
-            z-index: 1000; /* Lower z-index than logo */
-            margin-top: 100px; /* Added margin to push container down */
+            position: relative;
+            z-index: 1000;
+            margin-top: 100px;
         }
 
         h1 {
             margin-bottom: 1.5rem;
-            color: #ffffff; /* Changed to a darker color for better readability */
+            color: #f4f4f4;
         }
 
         .form-group {
@@ -59,7 +59,7 @@
         label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #ffffff; /* Changed to a darker color for better readability */
+            color: #f4f4f4;
         }
 
         input {
@@ -101,7 +101,7 @@
         .auth-link {
             margin-top: 1rem;
             font-size: 0.9rem;
-            color: #333; /* Changed to a darker color for better readability */
+            color: #f4f4f4;
         }
 
         .auth-link a {
@@ -113,18 +113,17 @@
             text-decoration: underline;
         }
 
-        /* Success Popup Styles */
         .success-popup {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
+            background: black;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
             text-align: center;
-            z-index: 1002; /* Above logo and container */
+            z-index: 1002;
             display: none;
         }
 
@@ -134,24 +133,21 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1001; /* Above container but below popup */
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
             display: none;
         }
 
-        /* Media Queries for Mobile Responsiveness */
         @media (max-width: 600px) {
             .logo {
-                left: 50%; /* Center the logo on mobile */
-                transform: translateX(-50%); /* Center the logo on mobile */
-                width: 100px; /* Smaller logo for mobile */
-                top: 10px; /* Adjusted margin for mobile */
+                width: 100px;
+                top: 10px;
             }
 
             .auth-container {
                 padding: 1rem;
                 width: 90%;
-                margin-top: 80px; /* Adjusted margin for mobile */
+                margin-top: 80px;
             }
 
             h1 {
@@ -202,10 +198,7 @@
                 <label for="lastName">Last Name</label>
                 <input type="text" id="lastName" required autocomplete="family-name">
             </div>
-            <div class="form-group">
-                <label for="Phone">Phone Number</label>
-                <input type="tel" id="Phone" required autocomplete="tel">
-            </div>
+            
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" required autocomplete="email" onpaste="return false;" oncopy="return false;">
@@ -214,6 +207,11 @@
             <div class="form-group">
                 <label for="confirm-email">Confirm Email</label>
                 <input type="email" id="confirm-email" required autocomplete="email" onpaste="return false;" oncopy="return false;">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" required autocomplete="tel">
             </div>
             
             <div class="form-group">
@@ -246,7 +244,6 @@
     </div>
 
     <script>
-        // Ensure Firebase is initialized properly
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -256,16 +253,14 @@
             const errorElement = document.getElementById('error-message');
             errorElement.textContent = '';
 
-            // Get form values
             const firstName = document.getElementById('firstName').value.trim();
             const lastName = document.getElementById('lastName').value.trim();
             const email = document.getElementById('email').value.trim();
             const confirmEmail = document.getElementById('confirm-email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirm-password').value.trim();
-            const Phone = document.getElementById('Phone').value.trim();
 
-            // Validate emails and passwords match
             if (email !== confirmEmail) {
                 errorElement.textContent = 'Emails do not match';
                 return;
@@ -278,27 +273,23 @@
             toggleLoading(true);
 
             try {
-                // Create user in Authentication
                 const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 console.log("User created successfully:", user.uid);
 
-                // Create document ID from uppercase email
                 const docId = email.toUpperCase();
 
-                // Save additional data to Firestore
                 await firebase.firestore().collection('users').doc(docId).set({
                     uid: user.uid,
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
-                    Phone: Phone,
+                    Phone: phone, // Add phone number to Firestore
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 console.log("User data saved to Firestore successfully!");
                 
-                // Show success popup
                 document.getElementById('overlay').style.display = 'block';
                 document.getElementById('success-popup').style.display = 'block';
                 startCountdown();
