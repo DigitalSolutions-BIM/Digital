@@ -279,12 +279,12 @@
 
                 const docId = email.toUpperCase();
 
-              await firebase.firestore().collection('users').doc(docId).set({
+        await firebase.firestore().collection('users').doc(docId).set({
     uid: user.uid,
     firstName: firstName,
     lastName: lastName,
     email: email,
-    Phone: phone,
+    Phone: phone,  // Ensure this line is present and correct
     Role: "", // Add Role field (empty by default)
     Module: "", // Add Module field (empty by default)
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
