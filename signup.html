@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Added for mobile responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://i.ibb.co; connect-src 'self' https://www.googleapis.com;">
     <title>Sign Up</title>
     <link rel="stylesheet" href="style.css">
     
@@ -26,8 +27,7 @@
         .logo {
             position: absolute;
             top: 20px; /* Added margin between logo and container */
-            left: 50%;
-            transform: translateX(-50%);
+            left: 20px; /* Position in the upper left corner for PC */
             width: 150px; /* Adjust the width as needed */
             height: auto; /* Maintain aspect ratio */
             z-index: 1001; /* Ensure logo is above the container */
@@ -48,7 +48,7 @@
 
         h1 {
             margin-bottom: 1.5rem;
-            color: #f4f4f4;
+            color: #333; /* Changed to a darker color for better readability */
         }
 
         .form-group {
@@ -59,7 +59,7 @@
         label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #f4f4f4;
+            color: #333; /* Changed to a darker color for better readability */
         }
 
         input {
@@ -101,7 +101,7 @@
         .auth-link {
             margin-top: 1rem;
             font-size: 0.9rem;
-            color: #f4f4f4;
+            color: #333; /* Changed to a darker color for better readability */
         }
 
         .auth-link a {
@@ -119,10 +119,10 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: black;
+            background: white;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             text-align: center;
             z-index: 1002; /* Above logo and container */
             display: none;
@@ -134,7 +134,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1001; /* Above container but below popup */
             display: none;
         }
@@ -142,6 +142,8 @@
         /* Media Queries for Mobile Responsiveness */
         @media (max-width: 600px) {
             .logo {
+                left: 50%; /* Center the logo on mobile */
+                transform: translateX(-50%); /* Center the logo on mobile */
                 width: 100px; /* Smaller logo for mobile */
                 top: 10px; /* Adjusted margin for mobile */
             }
@@ -200,7 +202,10 @@
                 <label for="lastName">Last Name</label>
                 <input type="text" id="lastName" required autocomplete="family-name">
             </div>
-            
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" required autocomplete="tel">
+            </div>
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" required autocomplete="email" onpaste="return false;" oncopy="return false;">
@@ -258,6 +263,7 @@
             const confirmEmail = document.getElementById('confirm-email').value.trim();
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirm-password').value.trim();
+            const phone = document.getElementById('phone').value.trim();
 
             // Validate emails and passwords match
             if (email !== confirmEmail) {
@@ -286,6 +292,7 @@
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
+                    phone: phone,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
