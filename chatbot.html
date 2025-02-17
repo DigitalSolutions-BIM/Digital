@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chat-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #userInput {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        #sendButton {
+            background-color: #4da6ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #sendButton:hover {
+            background-color: #3d8bdb;
+        }
+
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 50px;
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Smart Chatbot</h1>
+        <input type="text" id="userInput" placeholder="Type your message here..." />
+        <button id="sendButton" onclick="sendMessage()">Send</button>
+        <div id="response">Response will appear here...</div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            // Get the user's message
+            let userMessage = document.getElementById("userInput").value;
+            let apiKey = "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"; // Replace with your Hugging Face API key
+            let responseText = document.getElementById("response");
+
+            // Show loading message
+            responseText.innerHTML = "Loading...";
+
+            try {
+                // Send a request to the Hugging Face API
+                let response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct", {
+                    method: "POST",
+                    headers: { 
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ inputs: userMessage })
+                });
+
+                // Check if the request was successful
+                if (!response.ok) {
+                    throw new Error("Failed to get a response from the server.");
+                }
+
+                // Parse the response as JSON
+                let result = await response.json();
+
+                // Display the response
+                if (result[0]?.generated_text) {
+                    responseText.innerHTML = result[0].generated_text;
+                } else {
+                    responseText.innerHTML = "An error occurred! No text was generated.";
+                }
+            } catch (error) {
+                // Display the error message
+                responseText.innerHTML = "Error: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
